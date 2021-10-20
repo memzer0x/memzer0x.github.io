@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Introduction - Exploitation Freaks</title>
+        <title>Proxychains Config File Bypass - Exploitation Freaks</title>
         <!-- Custom HTML head -->
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
@@ -75,7 +75,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="introduction.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><a href="proxychains_config_bypass.html"><strong aria-hidden="true">2.</strong> Proxychains Config File Bypass</a></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="introduction.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><a href="proxychains_config_bypass.html" class="active"><strong aria-hidden="true">2.</strong> Proxychains Config File Bypass</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -134,44 +134,101 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="binary-exploitation-and-reverse-engineering"><a class="header" href="#binary-exploitation-and-reverse-engineering">Binary Exploitation and Reverse Engineering</a></h1>
-<p><strong>First things first, welcome in my gitbook !</strong></p>
-<p>I decided to make a mdbook so i can share writeups and exploits i found throughout time more easily online...</p>
-<p>Hopefully you will enjoy it as much as i did enjoy making the page :)</p>
-<p><strong>Time for Explanations !</strong>  Let's start with what is Reverse Engineering</p>
-<h1 id="what-is-reverse-engineering-"><a class="header" href="#what-is-reverse-engineering-">What is Reverse Engineering ?</a></h1>
-<p>To get a good definition of what is really Reverse Engineering i wen't on Wikipedia... Yeah i know pretty lame.</p>
-<p><strong>Reverse engineering</strong> (also known as backwards engineering or back engineering) is a process or method through the application of which one attempts to <strong>understand through deductive reasoning how a device, process, system, or piece of software accomplishes a task with very little (if any) insight into exactly how it does so.</strong></p>
-<p>In our case, we're <strong>Reverse Engineering programs (Binary Executables)</strong>, to do that we're using <strong>Decompilers, Debuggers, Disas, Hex Editors, PE Structure Analysis Tools and many more...</strong> note that you can reverse pretty much anything that has been engineered in the first place.</p>
-<p><img src="https://c.tenor.com/K8R7LThju04AAAAC/hack-the-planet.gif" alt="alt" /></p>
-<h1 id="why-reverse-engineering"><a class="header" href="#why-reverse-engineering">Why Reverse Engineering</a></h1>
-<p>If you're into programming, Reverse Engineering might be one of the most important skills to improve your programming knowledge.</p>
-<p>Looking at other people code was always one of the best, if not the best way to learn new programming techniques. Now we all know that C and C++ Programs goes through a big process (Preprocessing, Tokenization, Optimizations, Assembling, Linking,...) that basically change the textual code into a binary executable for the Operating System you want.</p>
-<p><img src="https://files.gitbook.com/v0/b/gitbook-28427.appspot.com/o/assets%2F-Mk7MCiXZ7za0yxyehCg%2F-Mk7RfLlphCqkUO3SrCj%2F-Mk7Rv7gIyuteAZiRR4v%2Fimage.png?alt=media&amp;token=a8fa223b-1f37-4781-b07d-f7b42dfb80c1" alt="alt" /></p>
-<p>Binary is a LOT more harder to understand and only a few binary ninjas are able to understand it, so unless the program is open-source you will potentially need to disassemble or decompile the binary, this is called Reverse Engineering, we take a compile executable (or binary), and we try to understand the code through either :</p>
-<ul>
-<li>
-<p>Disassembly</p>
-<ul>
-<li>Disassembly is the act of disassembling an executable or binary into it's assembly representation, the disassembling process can't be 100% perfect and they might be some errors to fixed in the disassembled code.</li>
-</ul>
-</li>
-<li>
-<p>Decompiling</p>
-<ul>
-<li>Decompilation is the act of decompiling, we basically take a compiled binary and we tried to reverse that process to obtain a C / C++ representation of the binary or executable your currently analysing.</li>
-</ul>
-</li>
-</ul>
-<p>Knowing how to reverse a program will allow you to take any executable you want and look at what it does and how it truly does it things behind the scene.</p>
-<p>Also Reverse Engineering, is useful for Malware Analysis, malwares uses a lot of different Obfuscation techniques, to make your life harder as an analyst, knowing how to counter these techniques and how to Deobfuscate programs will highly help you as a programmer.</p>
+                        <h1 id="proxychains-config-file-bypass"><a class="header" href="#proxychains-config-file-bypass">Proxychains Config File Bypass</a></h1>
+<p>Okay, in this chapter i will demonstrate the Proxychains config file bypass i've found, which wasn't really hidden if you look at the source code.</p>
+<p>The programmer of proxychains4-ng (rofl0r), said that the behavior of the program was intended to work in this way, therefore does not intend to fix it.</p>
+<p><em>Note this is not the exploit of the century but it can be extremely useful in certain scenarios.</em></p>
+<h2 id="how-it-works-"><a class="header" href="#how-it-works-">How it works ?</a></h2>
+<p>The bypass is fairly simple, the program looks in some directories for proxychains.conf, before looking in /etc/proxychains.conf which is the default config path on most linux installation.</p>
+<p>The program looks in each one of these directories until it finds a proper config file :</p>
+<ol>
+<li>PROXYCHAINS_CONF_FILE environment variable</li>
+<li>Current Directory (where the program is located)</li>
+<li>$HOME/.proxychains/proxychains.conf</li>
+<li>~/config/settings/proxychains.conf</li>
+<li>$SYSCONFDIF/proxychains.conf</li>
+<li>/etc/proxychains.conf (default directory is checked last, we can use any directories before this one)</li>
+</ol>
+<p>This means we can put a config file in any of the directories at index 1-5 (before the program checks for /etc/proxychains.conf), and the program will run with our custom proxychains.conf file.</p>
+<p>This also means that even if we restrict the permissions on the /etc/proxychains.conf file, people will eventually still be able to run their own custom config files even without having write access to the default config file.</p>
+<h2 id="prove-it-"><a class="header" href="#prove-it-">Prove it ?</a></h2>
+<p>Let's start by showing you the vulnerable (not that vulnerable) part...note how <strong>/etc/proxychains.conf</strong> is the last priority, but the default config on most linux installation :think:</p>
+<pre><code class="language-c">char *get_config_path(char* default_path, char* pbuf, size_t bufsize) {
+	char buf[512];
+	// top priority: user defined path
+	char *path = default_path;
+	
+	if(check_path(path)) // this will check if our path is not null
+		goto have; //this will return the config path found
+
+	// priority 1: env var PROXYCHAINS_CONF_FILE &lt;------
+	path = getenv(PROXYCHAINS_CONF_FILE_ENV_VAR);
+	if(check_path(path))
+		goto have;
+
+	// priority 2; proxychains conf in actual dir &lt;------
+	path = getcwd(buf, sizeof(buf));
+	snprintf(pbuf, bufsize, &quot;%s/%s&quot;, path, PROXYCHAINS_CONF_FILE);
+	path = pbuf;
+	if(check_path(path))
+		goto have;
+
+	// priority 3; $HOME/.proxychains/proxychains.conf &lt;------
+	path = getenv(&quot;HOME&quot;);
+	snprintf(pbuf, bufsize, &quot;%s/.proxychains/%s&quot;, path, PROXYCHAINS_CONF_FILE);
+	path = pbuf;
+	if(check_path(path))
+		goto have;
+    
+    // priority 3b: ~/config/settings/proxychains.conf (for haiku) &lt;------
+	path = getenv(&quot;HOME&quot;);
+	snprintf(pbuf, bufsize, &quot;%s/config/settings/%s&quot;, path, PROXYCHAINS_CONF_FILE);
+	path = pbuf;
+	if(check_path(path))
+		goto have;
+
+	// priority 4: $SYSCONFDIR/proxychains.conf &lt;------
+	path = SYSCONFDIR &quot;/&quot; PROXYCHAINS_CONF_FILE;
+	if(check_path(path))
+		goto have;
+
+	// priority 5: /etc/proxychains.conf &lt;------
+	path = &quot;/etc/&quot; PROXYCHAINS_CONF_FILE;
+	if(check_path(path))
+		goto have; // note here that the last priority is /etc/proxychains.conf, which is the default used by most linux installations
+
+	perror(&quot;couldnt find configuration file&quot;);
+	exit(1);
+
+	return NULL;
+	have:
+	return path;
+}
+</code></pre>
+<p><strong>Can you see it now ??!!</strong> Of course like i said it's not the exploit of the year, but it can be HIGHLY useful when you try to pivot on another system on the network, you can start a dynamic tunnel and proxychains into it, the dynamic tunnel will act like a SOCKS Proxy.</p>
+<h1 id="bypass-the-config-file-demo"><a class="header" href="#bypass-the-config-file-demo">Bypass the config file (demo)</a></h1>
+<p>Okay so i'm on a system connected to a user that doesn't have access to the <strong>/etc/proxychains.conf</strong> file, and i'm connected via SSH.</p>
+<p>I was able to start a dynamic tunnel on another computer in my network at 192.168.1.69, now i would like to use this tunnel like a SOCKS Proxy to enumerate other machines on the network, all i have to do is make a new proxychains.conf file and modify it so it uses our dynamic tunnel as proxy, next you have to make sure to put the file in one of these 5 directories :</p>
+<ol>
+<li>PROXYCHAINS_CONF_FILE environment variable</li>
+<li>Current Directory (Pretty similar to CVE-2015-3887, but way much useless)</li>
+<li>$HOME/.proxychains/proxychains.conf</li>
+<li>~/config/settings/proxychains.conf</li>
+<li>$SYSCONFDIF/proxychains.conf</li>
+</ol>
+<p>For my example i will put my config file inside the PROXYCHAINS_CONF_FILE environment variable, to do that i will use the command
+<code>export PROXYCHAINS_CONF_FILE=&lt;path/to/configfile&gt;</code> and we can run the program, let's prove it works...
+<img src="https://i.imgur.com/77RPyQS.png" alt="alt" /></p>
+<p>Note the yellow highlighted text is the config file the program is currently using, on the first run it uses the default one, however i bypassed the default config file on the second run.</p>
+<p>The green highlighted text is just a proof that i do not have write access to the file <strong>/etc/proxychains.conf</strong></p>
+<p>And the purple highlighted text is the command i used to bypass the config file.</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="next" href="proxychains_config_bypass.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
-                                <i class="fa fa-angle-right"></i>
+                            <a rel="prev" href="introduction.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
                             </a>
                         <div style="clear: both"></div>
                     </nav>
@@ -179,8 +236,8 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="next" href="proxychains_config_bypass.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
-                        <i class="fa fa-angle-right"></i>
+                    <a rel="prev" href="introduction.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
                     </a>
             </nav>
 
