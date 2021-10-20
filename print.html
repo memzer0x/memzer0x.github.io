@@ -76,7 +76,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="chapter_1.html"><strong aria-hidden="true">1.</strong> Introduction</a></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="introduction.html"><strong aria-hidden="true">1.</strong> Introduction</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -139,6 +139,33 @@
 <p><strong>First things first, welcome in my gitbook !</strong></p>
 <p>I decided to make a mdbook so i can share writeups and exploits i found throughout time more easily online...</p>
 <p>Hopefully you will enjoy it as much as i did enjoy making the page :)</p>
+<p><strong>Time for Explanations !</strong>  Let's start with what is Reverse Engineering</p>
+<h1 id="what-is-reverse-engineering-"><a class="header" href="#what-is-reverse-engineering-">What is Reverse Engineering ?</a></h1>
+<p>To get a good definition of what is really Reverse Engineering i wen't on Wikipedia... Yeah i know pretty lame.</p>
+<p><strong>Reverse engineering</strong> (also known as backwards engineering or back engineering) is a process or method through the application of which one attempts to <strong>understand through deductive reasoning how a device, process, system, or piece of software accomplishes a task with very little (if any) insight into exactly how it does so.</strong></p>
+<p>In our case, we're <strong>Reverse Engineering programs (Binary Executables)</strong>, to do that we're using <strong>Decompilers, Debuggers, Disas, Hex Editors, PE Structure Analysis Tools and many more...</strong> note that you can reverse pretty much anything that has been engineered in the first place.</p>
+<p><img src="https://c.tenor.com/K8R7LThju04AAAAC/hack-the-planet.gif" alt="alt" /></p>
+<h1 id="why-reverse-engineering"><a class="header" href="#why-reverse-engineering">Why Reverse Engineering</a></h1>
+<p>If you're into programming, Reverse Engineering might be one of the most important skills to improve your programming knowledge.</p>
+<p>Looking at other people code was always one of the best, if not the best way to learn new programming techniques. Now we all know that C and C++ Programs goes through a big process (Preprocessing, Tokenization, Optimizations, Assembling, Linking,...) that basically change the textual code into a binary executable for the Operating System you want.</p>
+<p><img src="https://files.gitbook.com/v0/b/gitbook-28427.appspot.com/o/assets%2F-Mk7MCiXZ7za0yxyehCg%2F-Mk7RfLlphCqkUO3SrCj%2F-Mk7Rv7gIyuteAZiRR4v%2Fimage.png?alt=media&amp;token=a8fa223b-1f37-4781-b07d-f7b42dfb80c1" alt="alt" /></p>
+<p>Binary is a LOT more harder to understand and only a few binary ninjas are able to understand it, so unless the program is open-source you will potentially need to disassemble or decompile the binary, this is called Reverse Engineering, we take a compile executable (or binary), and we try to understand the code through either :</p>
+<ul>
+<li>
+<p>Disassembly</p>
+<ul>
+<li>Disassembly is the act of disassembling an executable or binary into it's assembly representation, the disassembling process can't be 100% perfect and they might be some errors to fixed in the disassembled code.</li>
+</ul>
+</li>
+<li>
+<p>Decompiling</p>
+<ul>
+<li>Decompilation is the act of decompiling, we basically take a compiled binary and we tried to reverse that process to obtain a C / C++ representation of the binary or executable your currently analysing.</li>
+</ul>
+</li>
+</ul>
+<p>Knowing how to reverse a program will allow you to take any executable you want and look at what it does and how it truly does it things behind the scene.</p>
+<p>Also Reverse Engineering, is useful for Malware Analysis, malwares uses a lot of different Obfuscation techniques, to make your life harder as an analyst, knowing how to counter these techniques and how to Deobfuscate programs will highly help you as a programmer.</p>
 
                     </main>
 
