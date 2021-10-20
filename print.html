@@ -254,6 +254,10 @@
 <p>Note the yellow highlighted text is the config file the program is currently using, on the first run it uses the default one, however i bypassed the default config file on the second run.</p>
 <p>The green highlighted text is just a proof that i do not have write access to the file <strong>/etc/proxychains.conf</strong></p>
 <p>And the purple highlighted text is the command i used to bypass the config file.</p>
+<h1 id="how-to-fix-that-"><a class="header" href="#how-to-fix-that-">How to fix that ?</a></h1>
+<p>The best way to fix that is to put <strong>/etc/proxychains.conf</strong> as first priority, this will block users that don't have access to <strong>/etc/proxychains.conf</strong> from being able to make their own config files and use proxychains the way they want on your system.</p>
+<p>I have made a fork of proxychains4-ng and i fixed the part that was bothersome to be and probably for a lot of people too.</p>
+<p>You can find it there : https://github.com/XORausaurus/Proxychains4-ng</p>
 
                     </main>
 
