@@ -76,7 +76,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="introduction.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><div><strong aria-hidden="true">2.</strong> Exploitation</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="cve-2015-3887.html"><strong aria-hidden="true">2.1.</strong> CVE-2015-3887</a></li></ol></li><li class="chapter-item expanded "><div><strong aria-hidden="true">3.</strong> Other</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="tn-wn722n-monitor-mode.html"><strong aria-hidden="true">3.1.</strong> TN-WN722N Monitor Mode</a></li></ol></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="introduction.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><div><strong aria-hidden="true">2.</strong> Exploitation</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="cve-2015-3887.html"><strong aria-hidden="true">2.1.</strong> CVE-2015-3887</a></li></ol></li><li class="chapter-item expanded "><div><strong aria-hidden="true">3.</strong> Other</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="tn-wn722n-monitor-mode.html"><strong aria-hidden="true">3.1.</strong> TN-WN722N Monitor Mode</a></li><li class="chapter-item expanded "><a href="awus036ach-monitor-mode.html"><strong aria-hidden="true">3.2.</strong> AWUS036ACH Monitor Mode</a></li></ol></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -232,9 +232,6 @@ int socket(){
 	sudo modprobe 8188eu
 
 	# You can ignore compilation errors related to redhat
-
-	# Commands to enable monitor mode after setting up
-	ifconfig wlan0 down
 </code></pre>
 <h2 id="debian-based-system"><a class="header" href="#debian-based-system">Debian based System</a></h2>
 <pre><code class="language-bash">	sudo apt update
@@ -248,6 +245,17 @@ int socket(){
 	make
 	sudo make install
 	sudo modprobe 8188eu
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="monitor-mode-on-awus036ach"><a class="header" href="#monitor-mode-on-awus036ach">Monitor Mode on AWUS036ACH</a></h1>
+<p>Installing the required packages and configure them to make AWUS036ACH works in monitor mode is pretty straight forward, let's see how to do it.</p>
+<h2 id="arch-linux-1"><a class="header" href="#arch-linux-1">Arch Linux</a></h2>
+<pre><code class="language-bash">	pamcan -Syu
+	pacman -S install bc -y
+	 git clone https://github.com/aircrack-ng/rtl8812au.git
+	cd rtl8812au
+	make
+	sudo make install
+	reboot
 </code></pre>
 
                     </main>
