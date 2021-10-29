@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Introduction - Exploitation Freaks</title>
+        <title>RTL88x2bu Fake Access Point - Exploitation Freaks</title>
         <!-- Custom HTML head -->
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
@@ -75,7 +75,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="introduction.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><div><strong aria-hidden="true">2.</strong> Exploitation</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="cve-2015-3887.html"><strong aria-hidden="true">2.1.</strong> CVE-2015-3887</a></li></ol></li><li class="chapter-item expanded "><div><strong aria-hidden="true">3.</strong> Other</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="tn-wn722n-monitor-mode.html"><strong aria-hidden="true">3.1.</strong> TN-WN722N Monitor Mode</a></li><li class="chapter-item expanded "><a href="awus036ach-monitor-mode.html"><strong aria-hidden="true">3.2.</strong> AWUS036ACH Monitor Mode</a></li><li class="chapter-item expanded "><a href="rpi-rtl88x2bu-evil-AP.html"><strong aria-hidden="true">3.3.</strong> RTL88x2bu Fake Access Point</a></li></ol></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="introduction.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><div><strong aria-hidden="true">2.</strong> Exploitation</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="cve-2015-3887.html"><strong aria-hidden="true">2.1.</strong> CVE-2015-3887</a></li></ol></li><li class="chapter-item expanded "><div><strong aria-hidden="true">3.</strong> Other</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="tn-wn722n-monitor-mode.html"><strong aria-hidden="true">3.1.</strong> TN-WN722N Monitor Mode</a></li><li class="chapter-item expanded "><a href="awus036ach-monitor-mode.html"><strong aria-hidden="true">3.2.</strong> AWUS036ACH Monitor Mode</a></li><li class="chapter-item expanded "><a href="rpi-rtl88x2bu-evil-AP.html" class="active"><strong aria-hidden="true">3.3.</strong> RTL88x2bu Fake Access Point</a></li></ol></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -134,44 +134,87 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="binary-exploitation-and-reverse-engineering"><a class="header" href="#binary-exploitation-and-reverse-engineering">Binary Exploitation and Reverse Engineering</a></h1>
-<p><strong>First things first, welcome in my gitbook !</strong></p>
-<p>I decided to make a mdbook so i can share writeups and exploits i found throughout time more easily online...</p>
-<p>Hopefully you will enjoy it as much as i did enjoy making the page :)</p>
-<p><strong>Time for Explanations !</strong>  Let's start with what is Reverse Engineering</p>
-<h1 id="what-is-reverse-engineering-"><a class="header" href="#what-is-reverse-engineering-">What is Reverse Engineering ?</a></h1>
-<p>To get a good definition of what is really Reverse Engineering i wen't on Wikipedia... Yeah i know pretty lame.</p>
-<p><strong>Reverse engineering</strong> (also known as backwards engineering or back engineering) is a process or method through the application of which one attempts to <strong>understand through deductive reasoning how a device, process, system, or piece of software accomplishes a task with very little (if any) insight into exactly how it does so.</strong></p>
-<p>In our case, we're <strong>Reverse Engineering programs (Binary Executables)</strong>, to do that we're using <strong>Decompilers, Debuggers, Disas, Hex Editors, PE Structure Analysis Tools and many more...</strong> note that you can reverse pretty much anything that has been engineered in the first place.</p>
-<p><img src="https://c.tenor.com/K8R7LThju04AAAAC/hack-the-planet.gif" alt="alt" /></p>
-<h1 id="why-reverse-engineering"><a class="header" href="#why-reverse-engineering">Why Reverse Engineering</a></h1>
-<p>If you're into programming, Reverse Engineering might be one of the most important skills to improve your programming knowledge.</p>
-<p>Looking at other people code was always one of the best, if not the best way to learn new programming techniques. Now we all know that C and C++ Programs goes through a big process (Preprocessing, Tokenization, Optimizations, Assembling, Linking,...) that basically change the textual code into a binary executable for the Operating System you want.</p>
-<p><img src="https://files.gitbook.com/v0/b/gitbook-28427.appspot.com/o/assets%2F-Mk7MCiXZ7za0yxyehCg%2F-Mk7RfLlphCqkUO3SrCj%2F-Mk7Rv7gIyuteAZiRR4v%2Fimage.png?alt=media&amp;token=a8fa223b-1f37-4781-b07d-f7b42dfb80c1" alt="alt" /></p>
-<p>Binary is a LOT more harder to understand and only a few binary ninjas are able to understand it, so unless the program is open-source you will potentially need to disassemble or decompile the binary, this is called Reverse Engineering, we take a compile executable (or binary), and we try to understand the code through either :</p>
-<ul>
-<li>
-<p>Disassembly</p>
-<ul>
-<li>Disassembly is the act of disassembling an executable or binary into it's assembly representation, the disassembling process can't be 100% perfect and they might be some errors to fixed in the disassembled code.</li>
-</ul>
-</li>
-<li>
-<p>Decompiling</p>
-<ul>
-<li>Decompilation is the act of decompiling, we basically take a compiled binary and we tried to reverse that process to obtain a C / C++ representation of the binary or executable your currently analysing.</li>
-</ul>
-</li>
-</ul>
-<p>Knowing how to reverse a program will allow you to take any executable you want and look at what it does and how it truly does it things behind the scene.</p>
-<p>Also Reverse Engineering, is useful for Malware Analysis, malwares uses a lot of different Obfuscation techniques, to make your life harder as an analyst, knowing how to counter these techniques and how to Deobfuscate programs will highly help you as a programmer.</p>
+                        <h1 id="rpi-evil-ap-with-rtl88x2bu-wifi-card-driver"><a class="header" href="#rpi-evil-ap-with-rtl88x2bu-wifi-card-driver">RPI Evil AP with RTL88x2bu Wifi Card Driver</a></h1>
+<p><em><strong>Fake / Evil AP's are great right !</strong></em></p>
+<p>But sometime you want to make sure you have the most cheap pieces of equipment available so that if someone bust your device, you won't get mad losing it.</p>
+<p>Hence this guide... RTL88x2bu is one of the cheapest wireless adapters available where i live, so i bought one a couple of years ago, but it was with disgust that i learn that this adapter didn't support monitor mode (this means i can't use it for attacks like deauth / dumping).</p>
+<p>Although the device can be used to make fake AP's, so this is what this guide will be about.</p>
+<pre><code class="language-bash"># Update all packages per normal
+sudo apt update
+sudo apt upgrade
+
+# Install prereqs
+sudo apt install git dnsmasq hostapd bc build-essential dkms raspberrypi-kernel-headers
+
+# Reboot just in case there were any kernel updates
+sudo reboot
+
+# Pull down the driver source
+git clone https://github.com/cilynx/rtl88x2bu
+cd rtl88x2bu/
+
+# Configure for RasPi
+sed -i 's/I386_PC = y/I386_PC = n/' Makefile
+sed -i 's/ARM_RPI = n/ARM_RPI = y/' Makefile
+
+# DKMS as above
+VER=$(sed -n 's/\PACKAGE_VERSION=&quot;\(.*\)&quot;/\1/p' dkms.conf)
+sudo rsync -rvhP ./ /usr/src/rtl88x2bu-${VER}
+sudo dkms add -m rtl88x2bu -v ${VER}
+sudo dkms build -m rtl88x2bu -v ${VER} # Takes ~3-minutes on a 3B+
+sudo dkms install -m rtl88x2bu -v ${VER}
+
+# Plug in your adapter then confirm your new interface name
+ip addr
+
+# Set a static IP for the new interface (adjust if you have a different interface name or preferred IP)
+sudo tee -a /etc/dhcpcd.conf &lt;&lt;EOF
+interface wlan1
+    static ip_address=192.168.4.1/24
+    nohook wpa_supplicant
+EOF
+
+# Clobber the default dnsmasq config
+sudo tee /etc/dnsmasq.conf &lt;&lt;EOF
+interface=wlan1
+  dhcp-range=192.168.4.100,192.168.4.199,255.255.255.0,24h
+EOF
+
+# Configure hostapd
+sudo tee /etc/hostapd/hostapd.conf &lt;&lt;EOF
+interface=wlan1
+driver=nl80211
+ssid=pinet
+hw_mode=g
+channel=7
+wmm_enabled=0
+macaddr_acl=0
+auth_algs=1
+ignore_broadcast_ssid=0
+wpa=2
+wpa_passphrase=CorrectHorseBatteryStaple
+wpa_key_mgmt=WPA-PSK
+wpa_pairwise=TKIP
+rsn_pairwise=CCMP
+EOF
+
+sudo sed -i 's|#DAEMON_CONF=&quot;&quot;|DAEMON_CONF=&quot;/etc/hostapd/hostapd.conf&quot;|' /etc/default/hostapd
+
+# Enable hostapd
+sudo systemctl unmask hostapd
+sudo systemctl enable hostapd
+
+# Reboot to pick up the config changes
+sudo reboot
+
+</code></pre>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="next" href="cve-2015-3887.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
-                                <i class="fa fa-angle-right"></i>
+                            <a rel="prev" href="awus036ach-monitor-mode.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
                             </a>
                         <div style="clear: both"></div>
                     </nav>
@@ -179,8 +222,8 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="next" href="cve-2015-3887.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
-                        <i class="fa fa-angle-right"></i>
+                    <a rel="prev" href="awus036ach-monitor-mode.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
                     </a>
             </nav>
 
