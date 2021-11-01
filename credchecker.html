@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>RTL88x2bu Fake Access Point - Exploitation Freaks</title>
+        <title>credchecker - Exploitation Freaks</title>
         <!-- Custom HTML head -->
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
@@ -75,7 +75,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="introduction.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><div><strong aria-hidden="true">2.</strong> Exploitation</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="cve-2015-3887.html"><strong aria-hidden="true">2.1.</strong> CVE-2015-3887</a></li></ol></li><li class="chapter-item expanded "><div><strong aria-hidden="true">3.</strong> Reverse Engineering</div></li><li><ol class="section"><li class="chapter-item expanded "><div><strong aria-hidden="true">3.1.</strong> Flare 8 (2021)</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="credchecker.html"><strong aria-hidden="true">3.1.1.</strong> credchecker</a></li></ol></li></ol></li><li class="chapter-item expanded "><div><strong aria-hidden="true">4.</strong> Other</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="tn-wn722n-monitor-mode.html"><strong aria-hidden="true">4.1.</strong> TN-WN722N Monitor Mode</a></li><li class="chapter-item expanded "><a href="awus036ach-monitor-mode.html"><strong aria-hidden="true">4.2.</strong> AWUS036ACH Monitor Mode</a></li><li class="chapter-item expanded "><a href="rpi-rtl88x2bu-evil-AP.html" class="active"><strong aria-hidden="true">4.3.</strong> RTL88x2bu Fake Access Point</a></li></ol></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="introduction.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><div><strong aria-hidden="true">2.</strong> Exploitation</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="cve-2015-3887.html"><strong aria-hidden="true">2.1.</strong> CVE-2015-3887</a></li></ol></li><li class="chapter-item expanded "><div><strong aria-hidden="true">3.</strong> Reverse Engineering</div></li><li><ol class="section"><li class="chapter-item expanded "><div><strong aria-hidden="true">3.1.</strong> Flare 8 (2021)</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="credchecker.html" class="active"><strong aria-hidden="true">3.1.1.</strong> credchecker</a></li></ol></li></ol></li><li class="chapter-item expanded "><div><strong aria-hidden="true">4.</strong> Other</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="tn-wn722n-monitor-mode.html"><strong aria-hidden="true">4.1.</strong> TN-WN722N Monitor Mode</a></li><li class="chapter-item expanded "><a href="awus036ach-monitor-mode.html"><strong aria-hidden="true">4.2.</strong> AWUS036ACH Monitor Mode</a></li><li class="chapter-item expanded "><a href="rpi-rtl88x2bu-evil-AP.html"><strong aria-hidden="true">4.3.</strong> RTL88x2bu Fake Access Point</a></li></ol></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -134,87 +134,34 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="rpi-evil-ap-with-rtl88x2bu-wifi-card-driver"><a class="header" href="#rpi-evil-ap-with-rtl88x2bu-wifi-card-driver">RPI Evil AP with RTL88x2bu Wifi Card Driver</a></h1>
-<p><em><strong>Fake / Evil AP's are great right !</strong></em></p>
-<p>But sometime you want to make sure you have the most cheap pieces of equipment available so that if someone bust your device, you won't get mad losing it.</p>
-<p>Hence this guide... RTL88x2bu is one of the cheapest wireless adapters available where i live, so i bought one a couple of years ago, but it was with disgust that i learn that this adapter didn't support monitor mode (this means i can't use it for attacks like deauth / dumping).</p>
-<p>Although the device can be used to make fake AP's, so this is what this guide will be about.</p>
-<pre><code class="language-bash"># Update all packages per normal
-sudo apt update
-sudo apt upgrade
-
-# Install prereqs
-sudo apt install git dnsmasq hostapd bc build-essential dkms raspberrypi-kernel-headers
-
-# Reboot just in case there were any kernel updates
-sudo reboot
-
-# Pull down the driver source
-git clone https://github.com/cilynx/rtl88x2bu
-cd rtl88x2bu/
-
-# Configure for RasPi
-sed -i 's/I386_PC = y/I386_PC = n/' Makefile
-sed -i 's/ARM_RPI = n/ARM_RPI = y/' Makefile
-
-# DKMS as above
-VER=$(sed -n 's/\PACKAGE_VERSION=&quot;\(.*\)&quot;/\1/p' dkms.conf)
-sudo rsync -rvhP ./ /usr/src/rtl88x2bu-${VER}
-sudo dkms add -m rtl88x2bu -v ${VER}
-sudo dkms build -m rtl88x2bu -v ${VER} # Takes ~3-minutes on a 3B+
-sudo dkms install -m rtl88x2bu -v ${VER}
-
-# Plug in your adapter then confirm your new interface name
-ip addr
-
-# Set a static IP for the new interface (adjust if you have a different interface name or preferred IP)
-sudo tee -a /etc/dhcpcd.conf &lt;&lt;EOF
-interface wlan1
-    static ip_address=192.168.4.1/24
-    nohook wpa_supplicant
-EOF
-
-# Clobber the default dnsmasq config
-sudo tee /etc/dnsmasq.conf &lt;&lt;EOF
-interface=wlan1
-  dhcp-range=192.168.4.100,192.168.4.199,255.255.255.0,24h
-EOF
-
-# Configure hostapd
-sudo tee /etc/hostapd/hostapd.conf &lt;&lt;EOF
-interface=wlan1
-driver=nl80211
-ssid=pinet
-hw_mode=g
-channel=7
-wmm_enabled=0
-macaddr_acl=0
-auth_algs=1
-ignore_broadcast_ssid=0
-wpa=2
-wpa_passphrase=CorrectHorseBatteryStaple
-wpa_key_mgmt=WPA-PSK
-wpa_pairwise=TKIP
-rsn_pairwise=CCMP
-EOF
-
-sudo sed -i 's|#DAEMON_CONF=&quot;&quot;|DAEMON_CONF=&quot;/etc/hostapd/hostapd.conf&quot;|' /etc/default/hostapd
-
-# Enable hostapd
-sudo systemctl unmask hostapd
-sudo systemctl enable hostapd
-
-# Reboot to pick up the config changes
-sudo reboot
-
-</code></pre>
+                        <h1 id="credchecker"><a class="header" href="#credchecker">Credchecker</a></h1>
+<p>Credchecker is the first challenge of the Flare-On 8 (2021) CTF Event and it was super easy to complete.</p>
+<h2 id="the-challenge"><a class="header" href="#the-challenge">The Challenge</a></h2>
+<p>We are given a <strong>admin.html</strong> file (which is the challenge meat), and a <strong>img</strong> directory containing an image (not important to us).</p>
+<p>I first start a <strong>PHP Web Server</strong> using the following command
+<code>php -S 127.0.0.1:6969</code></p>
+<p>Then i can access the challenge using my browser at the following URL <strong>127.0.0.1:6969</strong>, let's see what the challenge page looks like in the first place.</p>
+<p>![[Pasted image 20211101004739.png]]</p>
+<h2 id="source-code"><a class="header" href="#source-code">Source Code</a></h2>
+<p>To solve the challenge we need to look at the javascript code inside the <strong>admin.html</strong> file.</p>
+<p>Whenever the button is pressed, the <strong>checkCreds()</strong> javascript function gets called.</p>
+<p>![[Pasted image 20211101005659.png]]</p>
+<p>Let's find this <strong>checkCreds()</strong> function.</p>
+<p>![[Pasted image 20211101005908.png]]</p>
+<p>We're basically checking if <strong>btoa(ourInput)</strong> is equal to <strong>goldenticket</strong>, the <strong>btoa</strong> function takes a base64 string and decodes it.</p>
+<p>We can assume that the password is the the base64 encoded verson of <strong>goldenticket</strong>, or <strong>atob(&quot;goldenticket&quot;)</strong> should also print you the password, the <strong>atob</strong> function takes an ascii string and encode it into base64.</p>
+<p>Let's prove the password works...</p>
+<p>![[Pasted image 20211101010608.png]]</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="awus036ach-monitor-mode.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="cve-2015-3887.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
+                            </a>
+                            <a rel="next" href="tn-wn722n-monitor-mode.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
                             </a>
                         <div style="clear: both"></div>
                     </nav>
@@ -222,8 +169,11 @@ sudo reboot
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="awus036ach-monitor-mode.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="cve-2015-3887.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
+                    </a>
+                    <a rel="next" href="tn-wn722n-monitor-mode.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
                     </a>
             </nav>
 

@@ -76,7 +76,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="introduction.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><div><strong aria-hidden="true">2.</strong> Exploitation</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="cve-2015-3887.html"><strong aria-hidden="true">2.1.</strong> CVE-2015-3887</a></li></ol></li><li class="chapter-item expanded "><div><strong aria-hidden="true">3.</strong> Reverse Engineering</div></li><li><ol class="section"><li class="chapter-item expanded "><div><strong aria-hidden="true">3.1.</strong> Flare 8 (2021)</div></li><li><ol class="section"><li class="chapter-item expanded "><a href=""./credchecker.html"><strong aria-hidden="true">3.1.1.</strong> credchecker</a></li></ol></li></ol></li><li class="chapter-item expanded "><div><strong aria-hidden="true">4.</strong> Other</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="tn-wn722n-monitor-mode.html"><strong aria-hidden="true">4.1.</strong> TN-WN722N Monitor Mode</a></li><li class="chapter-item expanded "><a href="awus036ach-monitor-mode.html"><strong aria-hidden="true">4.2.</strong> AWUS036ACH Monitor Mode</a></li><li class="chapter-item expanded "><a href="rpi-rtl88x2bu-evil-AP.html"><strong aria-hidden="true">4.3.</strong> RTL88x2bu Fake Access Point</a></li></ol></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="introduction.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><div><strong aria-hidden="true">2.</strong> Exploitation</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="cve-2015-3887.html"><strong aria-hidden="true">2.1.</strong> CVE-2015-3887</a></li></ol></li><li class="chapter-item expanded "><div><strong aria-hidden="true">3.</strong> Reverse Engineering</div></li><li><ol class="section"><li class="chapter-item expanded "><div><strong aria-hidden="true">3.1.</strong> Flare 8 (2021)</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="credchecker.html"><strong aria-hidden="true">3.1.1.</strong> credchecker</a></li></ol></li></ol></li><li class="chapter-item expanded "><div><strong aria-hidden="true">4.</strong> Other</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="tn-wn722n-monitor-mode.html"><strong aria-hidden="true">4.1.</strong> TN-WN722N Monitor Mode</a></li><li class="chapter-item expanded "><a href="awus036ach-monitor-mode.html"><strong aria-hidden="true">4.2.</strong> AWUS036ACH Monitor Mode</a></li><li class="chapter-item expanded "><a href="rpi-rtl88x2bu-evil-AP.html"><strong aria-hidden="true">4.3.</strong> RTL88x2bu Fake Access Point</a></li></ol></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -216,7 +216,24 @@ int socket(){
 <li>Bypass the default libproxychains4.so using our exploit</li>
 </ol>
 <p>Just put the newly compiled file inside the same directory as the proxychains binary, make sure the name of the shared object is <strong>libproxychains4.so</strong> and you should get a shell...</p>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="credchecker"><a class="header" href="#credchecker">credchecker</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="credchecker"><a class="header" href="#credchecker">Credchecker</a></h1>
+<p>Credchecker is the first challenge of the Flare-On 8 (2021) CTF Event and it was super easy to complete.</p>
+<h2 id="the-challenge"><a class="header" href="#the-challenge">The Challenge</a></h2>
+<p>We are given a <strong>admin.html</strong> file (which is the challenge meat), and a <strong>img</strong> directory containing an image (not important to us).</p>
+<p>I first start a <strong>PHP Web Server</strong> using the following command
+<code>php -S 127.0.0.1:6969</code></p>
+<p>Then i can access the challenge using my browser at the following URL <strong>127.0.0.1:6969</strong>, let's see what the challenge page looks like in the first place.</p>
+<p>![[Pasted image 20211101004739.png]]</p>
+<h2 id="source-code"><a class="header" href="#source-code">Source Code</a></h2>
+<p>To solve the challenge we need to look at the javascript code inside the <strong>admin.html</strong> file.</p>
+<p>Whenever the button is pressed, the <strong>checkCreds()</strong> javascript function gets called.</p>
+<p>![[Pasted image 20211101005659.png]]</p>
+<p>Let's find this <strong>checkCreds()</strong> function.</p>
+<p>![[Pasted image 20211101005908.png]]</p>
+<p>We're basically checking if <strong>btoa(ourInput)</strong> is equal to <strong>goldenticket</strong>, the <strong>btoa</strong> function takes a base64 string and decodes it.</p>
+<p>We can assume that the password is the the base64 encoded verson of <strong>goldenticket</strong>, or <strong>atob(&quot;goldenticket&quot;)</strong> should also print you the password, the <strong>atob</strong> function takes an ascii string and encode it into base64.</p>
+<p>Let's prove the password works...</p>
+<p>![[Pasted image 20211101010608.png]]</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="monitor-mode-on-tn-wn722n"><a class="header" href="#monitor-mode-on-tn-wn722n">Monitor Mode on TN-WN722N</a></h1>
 <p>Installing the required packages and configure them to make TN-WN722N works in monitor mode is pretty straight forward, let's see how to do it.</p>
 <h2 id="arch-linux"><a class="header" href="#arch-linux">Arch Linux</a></h2>
