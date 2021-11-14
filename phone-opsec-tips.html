@@ -1,0 +1,234 @@
+<!DOCTYPE HTML>
+<html lang="en" class="sidebar-visible no-js light">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Phone Security Thread from Dread - Exploitation Freaks</title>
+        <!-- Custom HTML head -->
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+    </head>
+    <body>
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script type="text/javascript">
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script type="text/javascript">
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('no-js')
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add('js');
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script type="text/javascript">
+            var html = document.querySelector('html');
+            var sidebar = 'hidden';
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded "><a href="introduction.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><div><strong aria-hidden="true">2.</strong> Exploitation</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="cve-2015-3887.html"><strong aria-hidden="true">2.1.</strong> CVE-2015-3887</a></li></ol></li><li class="chapter-item expanded "><div><strong aria-hidden="true">3.</strong> Reverse Engineering</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="anatomy-of-a-gopher.html"><strong aria-hidden="true">3.1.</strong> Anatomy of a Gopher</a></li><li class="chapter-item expanded "><div><strong aria-hidden="true">3.2.</strong> Flare 8 (2021)</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="credchecker.html"><strong aria-hidden="true">3.2.1.</strong> credchecker</a></li></ol></li></ol></li><li class="chapter-item expanded "><div><strong aria-hidden="true">4.</strong> Other</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="tn-wn722n-monitor-mode.html"><strong aria-hidden="true">4.1.</strong> TN-WN722N Monitor Mode</a></li><li class="chapter-item expanded "><a href="awus036ach-monitor-mode.html"><strong aria-hidden="true">4.2.</strong> AWUS036ACH Monitor Mode</a></li><li class="chapter-item expanded "><a href="rpi-rtl88x2bu-evil-AP.html"><strong aria-hidden="true">4.3.</strong> RTL88x2bu Fake Access Point</a></li><li class="chapter-item expanded "><a href="windows-cheatsheet.html"><strong aria-hidden="true">4.4.</strong> Windows Cheatsheet</a></li><li class="chapter-item expanded "><a href="phone-opsec-tips.html" class="active"><strong aria-hidden="true">4.5.</strong> Phone Security Thread from Dread</a></li></ol></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky bordered">
+                    <div class="left-buttons">
+                        <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Exploitation Freaks</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script type="text/javascript">
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="social-media-anonymity-tips-and-tricks-from-dread"><a class="header" href="#social-media-anonymity-tips-and-tricks-from-dread">Social Media Anonymity Tips and Tricks (from dread)</a></h1>
+<p>The guide is about anonymity on social media and the safe use of a mobile phones. It should make it difficult to identify what you do or who you are. There is something for everyone in it.</p>
+<p>Thoughts on some applications.</p>
+<p>Facebook Messenger: End to end encryption is opt in and only enabled when you start a secret conversation. Secret conversations not available on web app. FB has a history of all secret conversations, you can not delete it. Deleting something on FB doesn't delete anything from their databases or backups.</p>
+<p>Telegram: Very popular and allows for huge groups. Desktop application does not have end to end encryption. End to End encryption is only in secret chats. If using a Televend shop to order drugs then you should use the app on Tails and manually PGP encrypt your address.
+Set up Telegram on Tails dreadytofatroptsdj6io7l3xptbet6onoyno2yv7jicoxknyazubrad.onion/post/f21e4eada88a77f82008/#c-8f48c2c4c28c5ade43
+Make Telegram persistent on Tails dreadytofatroptsdj6io7l3xptbet6onoyno2yv7jicoxknyazubrad.onion/post/6ba79b8708c26aaf2bd9/#c-ffc19b9f565eff160e
+Telegram stores are throwing buyer OpSec out of the window. Telegram is what people think is safe and it is the de facto drug app in many countries. Use something else.</p>
+<p>Wickr Me: Wickr does not have phone activation and it does not require an email to sign up. It is encrypted by default and it has a self destruct on messages that you can set up. A lot of vendors and other people in the drug trade trust Wickr. wickr.com/security/ Wickr does not hide who you are (IP address) or who you talk to. It is up to you to protect your identity. If the people you talk to fail to protect themselves then that can come back to bite you in the ass. You shouldn't on the same account talk to people you order drugs from, people you sell drugs to and then your real life friends too. All of this should be separate.</p>
+<p>WhatsApp: Has end to end encryption. It is Facebook. Facebook wants to gather as much information as possible so they can better advertise to you. Probably not the best choice.</p>
+<p>Instagram: Like facebook it is hostile towards Tor. Might be a lucrative place for advertising. It does not have end to end encryption for the chat.</p>
+<p>Reddit and Twitter: Hostile towards Tor users. Reddit just doesn't work if you use a Tor exit node. They will shadowban you account. Twitter will lock your account if you use it with Tor and they'll ask for phone verification. These are still important platforms for getting a message out (DarkDotFail on Twitter, DreadAlert on Reddit).</p>
+<p>SnapChat: Why do people post shit that incriminates them or you and expect SnapChat to actually delete what they post? SnapChat does not delete anything. It is a good place to advertise drugs.</p>
+<p>TikTok, Tinder, Grindr: Might be a good places to advertise drugs, depends how you work them.</p>
+<p>Signal: Signal is the most promising of all IM apps. Good security and privacy. Only thing kept in logs is your phone number. Phone number requirement is what is keeping me from recommending it to everyone. You can activate Signal with a temporary number and prevent account getting stolen signal.org/blog/signal-pins/ If you and who you are talking to are willing to go through with buying a phone number then use Signal.</p>
+<p>Encrochat &amp; Sky ECC: LE found the servers and pushed an update that broke the encryption and identified the users. Users of the services were hiding among other criminals. The service was not any better than a free solution. It was a giant honeypot and the effects of it will be felt for years. Use something that is widely used by regular people. Information that is critical should be manually PGP encrypted.
+All centralized services have useful data to hand over to LE. All of them can be forced to start logging data that they normally don't.</p>
+<p>Data that is logged:</p>
+<ol>
+<li>Contacts and historical contacts on the app</li>
+<li>Contacts on your phone</li>
+<li>Contents of messages</li>
+<li>Encrypted messages</li>
+<li>Sent files</li>
+<li>Deleted messages</li>
+<li>Original EXIF data of sent photos</li>
+<li>Phone models used with the app</li>
+<li>Phone IMEI and other uniquely identifying data</li>
+<li>IP addresses used with the</li>
+<li>Your phone number</li>
+<li>Contents or metadata of files on your phone</li>
+<li>Location data</li>
+<li>Contents of your SMS messages</li>
+<li>Your browsing history</li>
+<li>And more</li>
+</ol>
+<p>Number 9 is how the police attaches real names to pseudonyms in IM (instant messaging) applications. Most people also use their real phone number on Telegram/Signal. Those that do have burner phones/numbers have non existent OpSec (operational security) beyond that. They use their burner at their home or at work, at their friends place. They have their burner turned on while their regular phone is turned on like while driving down a highway or in a bar. Sitting in a restaurant, turning off your phone and turning on the burner is not sufficient OpSec either.</p>
+<p>When the company does not have to comply with law enforcement the process of identifying a person behind an account is more involved but perfectly doable.
+Process looks roughly like this:</p>
+<ol>
+<li>Identify account you want to investigate.</li>
+<li>Identify IP addresses of the servers that IM app clients connect to.
+3a. Start conversation with account under investigation. Each message the suspect sends to you corresponds with upload traffic from a phone to the server identified in step 2. The timestamps of them sending a message and you receiving a message will correlate. Do this however many times needed and you have a match.
+3b. Each message you send will correlate with a download by the suspect's phone. These will be time correlated if the suspect is currently online.
+3b. Send a file of known size to suspect. This will stand out among all of the other single message uploads/downloads.
+3c. Start a video/voice connection with suspect. This will correspond with a data stream of known duration and size.
+3d. If suspect is not talking to you then you can use &quot;message read&quot; notifications that will be uploaded by the suspect or &quot;person is writing a message&quot; notifications that will be downloaded by the suspect. Initiating a voice or video connection request can also be correlated. You sending a message will not work if the person is not currently online but it can be used if you use the &quot;message read&quot; notification on your side and the corresponding download of the message by the suspect.</li>
+</ol>
+<p>The more people that the suspect gets to hide in the more data you need to identify the suspect. Of course you try to narrow down the geographic location of the suspect to make this process quicker.</p>
+<p>TEMPORARY PHONE NUMBER</p>
+<p>This will be used to activate an account. Beware that this number is temporary and you get it for just a few minutes. After that it is gone and you can not get it back. People can use it to steal your account. Some services want to verify you with the phone number again when you log in from a new place (happens if you use Tor), set up a 2FA authentication with those services. Use the Google authenticator app if available. Second option is e-mail authentication. Remember that every process must be done through tor. If you use the service through Tor but used the email without it at any point then you are screwed forever.</p>
+<ol>
+<li>Set up tails. The DNM Bible is down right now but you can find the offline version here as a PDF dreadytofatroptsdj6io7l3xptbet6onoyno2yv7jicoxknyazubrad.onion/post/40c86816505155c1a0d8</li>
+<li>Buy Monero. If you need to then buy BTC with Monero (also in the bible). You must send the crypto transactions over Tor.</li>
+<li>You can buy phone numbers here textverified.com or here 5sim.net or any other service that you'd prefer. They must accept crypto.</li>
+</ol>
+<p>You might tie all of your activated accounts together that you activate with purchases with the same account on one of these websites. Same if you make purchases with BTC from the same Bitcoin account, the BTC connection is across websites and their accounts. This depends on the website keeping these logs but you can not assume or trust that they don't. If an account on one of these number selling websites is ever identified as yours then all activations that you do with it in the future will be tied to you.</p>
+<p>TOR HOSTILE WEBSITES</p>
+<p>This is for completeness sake. I don't know exactly how to do it just that it is possible. You need to route your traffic like this you-&gt;tor-&gt;proxy-&gt;website.</p>
+<p>You'll have to buy a proxy server with Monero. Or buy a VPS and configure a proxy yourself. If anyone has a good guide on how to do this then I'd appreciate it.</p>
+<p>PHONE IMEI and SIM</p>
+<p>All phones have a unique identification number, IMEI. It gets sent when you connect to a cell tower. You can't change IMEI on most phones anymore, you need to develop a custom solution for every phone. Mobile service providers keep track of IMEI numbers. When they saw them, the geographic location and the SIM that was present. IMEI ties together different SIM cards used on a phone. Some people are under the impression that the SIM is important and throwing out or changing the SIM is what saves them. The SIM is tied to your name and it is what enables service providers to bill people.</p>
+<p>Some apps on your phone will have access to your IMEI. If the network operator knows the IMEI and through some app an IMEI is identified as belonging to you the suspect then that might lead to an arrest.</p>
+<p>If you do not want an IMEI being associated with you then buy your phone with cash in some place that you are not easily identified. NEVER connect to a cell tower. If you make an emergency call then that will broadcast your IMEI. Airplane mode is a software switch, it doesn't actually turn off the antenna. There is no guarantee that your phone will not try to connect to a cell tower even with no SIM in phone. Same goes for airplane mode. </p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="windows-cheatsheet.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="windows-cheatsheet.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+        <script type="text/javascript">
+            window.playground_copyable = true;
+        </script>
+        <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="searcher.js" type="text/javascript" charset="utf-8"></script>
+        <script src="clipboard.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="highlight.js" type="text/javascript" charset="utf-8"></script>
+        <script src="book.js" type="text/javascript" charset="utf-8"></script>
+
+        <!-- Custom JS scripts -->
+    </body>
+</html>
