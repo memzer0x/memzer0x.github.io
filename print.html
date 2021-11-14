@@ -300,16 +300,16 @@ $ git clone https://github.com/aircrack-ng/rtl8812au
 <p>Find a target network (make sure you have the right to crack it), and note the channel the network is currently using. Now let's start the real things, we are going to want to see what's going on in the airodump capture for this reason we'll manually capture the handshake with wireshark instead of using the airodump --write switch.</p>
 <pre><code>$ sudo airodump-ng &lt;device&gt; -c &lt;network channel&gt; &amp; wireshark
 </code></pre>
-<p>Open the wireshark window, and double clikc on the interface your currently listening on with airodump, now you can copy the BSSID of your target network and we'll use a filter inside wireshark so we will see only the packets addressed to this network.</p>
+<p>Open the wireshark window, and double click on the interface your currently listening on with airodump, now you can copy the BSSID of your target network and we'll use a filter inside wireshark so we will see only the packets addressed to this network.</p>
 <pre><code>Wireshark BSSID Filter : wlan.ta == &lt;bssid&gt; || wlan.da == &lt;bssid&gt;
 Handshake filter : eapol &amp;&amp; wlan.da == &lt;bssid&gt; || eapol &amp;&amp; wlan.ta == &lt;bssid&gt;
 </code></pre>
-<p>Now you can wait until someone tries to connect to a network with a password, you should receive EAPOL packets when the key reach <strong>Message 2 of 4</strong>, you have your half handshake.</p>
+<p>Now you can wait until someone tries to connect to the network with a password, you should capture EAPOL packets when the key reach <strong>Message 2 of 4</strong>, you know you have your half handshake.</p>
 <h2 id="social-engineering-scenario"><a class="header" href="#social-engineering-scenario">Social Engineering Scenario</a></h2>
 <p>Okay let's go a little deeper because half-handshakes can be used in a tons of different scenario, but in this section we'll explore one. </p>
 <p>So here it is, you are currently in your home and you want to hack into your neighbor's wifi (totally unethical and illegal), but you can't seem to get any handshake out of their network, what you could do is make an Evil Access Point that looks exactly like your target network (same name, bssid) and put some random password on this network, you will also launch a ddos attack agains't the target network so that the victim can't connect to his real network. Now your neighbor get's home after a long day of work, he see's that he his disconnected from the network so he tries to connect to it, prompt is usual password and he see's that it doesn't work. </p>
 <p>At this point you should have catched at least a handshake or even more that you can crack, it's time to stop the attack and allow your poor neighbor to connect back again to it's network.</p>
-<p>Check on wireshark using the <strong>eapol</strong> filter or the Handshake filter i shown a little earlier, if you have eapol packets with &quot;Key (Message 2 of 4)&quot; this means you successfully captured your half-handshake ! Save the capture to a .pcap file and we can go to the next step.</p>
+<p>Check on wireshark using the <strong>eapol</strong> filter or the Handshake filter i shown a little earlier, if you have eapol packets with &quot;Key (Message 2 of 4)&quot; this means you successfully captured your half-handshake. Save the capture to a .pcap file and we can go to the next step.</p>
 <h2 id="time-to-crack"><a class="header" href="#time-to-crack">Time to crack</a></h2>
 <p>Now you have successfully gotten your hands on your handshake it's time to crack it. For this, you can use either a predefined wordlist (works sometimes), or if you know the target you could build one based on your target, in this case i will show you using a predefined wordlist <strong>rockyou.txt</strong>, the command is the same as usual but i will still show it.</p>
 <pre><code>aircrack-ng -w /usr/share/wordlists/rockyou.txt &lt;capture file&gt;
