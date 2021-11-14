@@ -249,6 +249,7 @@ $ go tool objdump &lt;arguments&gt; &lt;bin&gt;
 <h2 id="default-protections-on-go-binaries"><a class="header" href="#default-protections-on-go-binaries">Default Protections on Go Binaries</a></h2>
 <p>When you run go build, it should enable <strong>NX</strong> <em>(or No Execute if you prefer)</em> by default on the resulting binary. </p>
 <p>However note that <strong>Position Independent Code (PIC or PIE) and Stack Canaries</strong> are usually disabled <strong>by default</strong>, also note that binaries are not stripped.</p>
+<p>ROP are a lot easier on go binaries since <strong>PIC (or PIE)</strong> is disabled by default.</p>
 <h4 id="how-to-enable-protections-on-go-binaries"><a class="header" href="#how-to-enable-protections-on-go-binaries">How to enable protections on Go binaries.</a></h4>
 <ul>
 <li>Enable Stack Protections <code>export CGO_LDFLAGS='-fstack-protector'</code></li>
@@ -256,6 +257,39 @@ $ go tool objdump &lt;arguments&gt; &lt;bin&gt;
 <li>Enable PIE <code>export GOFLAGS='-buildmode=pie'</code></li>
 <li>Strip functions names and reduce size <code>Get UPX and pack the file</code></li>
 </ul>
+<h2 id="searching-for-strings"><a class="header" href="#searching-for-strings">Searching for Strings</a></h2>
+<p>Searching for strings in a go binary is a little harder than usual, because they are clumped together in a massive string table.</p>
+<ul>
+<li>Go does not store null terminated strings.</li>
+<li>Strings are clumped together, while keeping a separate table with length information.</li>
+<li>This can make it difficult to look for string cross-references.</li>
+<li>We can use a project like <a href="https://github.com/carvesystems/gostringr2">gostringsr2</a> to parse strings.</li>
+<li>When working with MachO binaries, you'd have to list strings from .rodata or entire binary</li>
+</ul>
+<p>The usage of <strong>grep</strong> or filters is basically a must when looking at a go binary strings, because finding yourself in this massive string table can be quite hard.</p>
+<p><strong>rabin2</strong>
+rabin2 is very useful when looking at go strings and is absolutely straightforward to use.</p>
+<pre><code>rabin2 -zz &lt;binary&gt; | grep &lt;char.sequence&gt;
+</code></pre>
+<p><em>Just like with disassemblers, always use 2-3 different program when looking at strings and check for any differences, it might be hard to see with go binaries since they are statically linked, therefore all library strings should also be in the string table by default.</em></p>
+<h2 id="searching-for-functions"><a class="header" href="#searching-for-functions">Searching for functions</a></h2>
+<p>Searching for functions is a lot easier than searching for strings in go binaries, which is the opposite of usual C/C++ binaries where strings are by default easier to find than functions.</p>
+<p>Most of the time, even <strong>stripped</strong>, functions are still easy to find in go binaries, which is awesome to us anal-ysts.</p>
+<h2 id="finding-the-main-function"><a class="header" href="#finding-the-main-function">Finding the main function</a></h2>
+<p>Finding the main function is the easiest to find in go binaries, even in stripped ones... to find the main function look for either <strong>main.main or main_main</strong>.</p>
+<h2 id="go-stacks"><a class="header" href="#go-stacks">Go Stacks</a></h2>
+<p>An important thing to know about Go binaries is that they handle stacks differently, here's the main difference.</p>
+<ul>
+<li>Go routines have small stacks by default (2 kibibyte = 1024 bytes stack)</li>
+<li>Many goroutines will call <strong>morestack</strong> (sym.runtime.morestack_noctxt), to grow the stack (in powers of 2) as needed using stack copying.</li>
+<li>This is called because go can't be sure the function will outgrow the stack (i.e recursive functions) given non-deterministic goroutines.</li>
+<li>When this occurs, stack grows, pointers in the stack are updated.</li>
+<li>Additionally, each function compares its stack pointer against <strong>g-&gt;stackguard</strong> to check for overflow.</li>
+</ul>
+<h2 id="conventions-arguments-and-return-values"><a class="header" href="#conventions-arguments-and-return-values">Conventions (Arguments and Return Values)</a></h2>
+<p>Go binaries places return values on the stack, as opposed to C where return values are placed in registers (usually eax for x86).</p>
+<p>As for return values, function arguments are also placed on the stack rather than registers.</p>
+<p><em>Understanding go internal libraries can significantly help us understand what is going on in the assembly code. Read the Go Docs !</em></p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="credchecker"><a class="header" href="#credchecker">Credchecker</a></h1>
 <p>Credchecker is the first challenge of the Flare-On 8 (2021) CTF Event and it was super easy to complete.</p>
 <h2 id="the-challenge"><a class="header" href="#the-challenge">The Challenge</a></h2>
