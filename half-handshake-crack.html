@@ -3,8 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title></title>
-        <base href="/">
+        <title>Half-Handshake Crack - Exploitation Freaks</title>
         <!-- Custom HTML head -->
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
@@ -76,7 +75,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="introduction.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><div><strong aria-hidden="true">2.</strong> Exploitation</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="cve-2015-3887.html"><strong aria-hidden="true">2.1.</strong> CVE-2015-3887</a></li></ol></li><li class="chapter-item expanded "><div><strong aria-hidden="true">3.</strong> Reverse Engineering</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="anatomy-of-a-gopher.html"><strong aria-hidden="true">3.1.</strong> Anatomy of a Gopher</a></li><li class="chapter-item expanded "><div><strong aria-hidden="true">3.2.</strong> Flare 8 (2021)</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="credchecker.html"><strong aria-hidden="true">3.2.1.</strong> credchecker</a></li></ol></li></ol></li><li class="chapter-item expanded "><div><strong aria-hidden="true">4.</strong> Other</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="half-handshake-crack.html"><strong aria-hidden="true">4.1.</strong> Half-Handshake Crack</a></li><li class="chapter-item expanded "><a href="tn-wn722n-monitor-mode.html"><strong aria-hidden="true">4.2.</strong> TN-WN722N Monitor Mode</a></li><li class="chapter-item expanded "><a href="awus036ach-monitor-mode.html"><strong aria-hidden="true">4.3.</strong> AWUS036ACH Monitor Mode</a></li><li class="chapter-item expanded "><a href="rpi-rtl88x2bu-evil-AP.html"><strong aria-hidden="true">4.4.</strong> RTL88x2bu Fake Access Point</a></li><li class="chapter-item expanded "><a href="windows-cheatsheet.html"><strong aria-hidden="true">4.5.</strong> Windows Cheatsheet</a></li></ol></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="introduction.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><div><strong aria-hidden="true">2.</strong> Exploitation</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="cve-2015-3887.html"><strong aria-hidden="true">2.1.</strong> CVE-2015-3887</a></li></ol></li><li class="chapter-item expanded "><div><strong aria-hidden="true">3.</strong> Reverse Engineering</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="anatomy-of-a-gopher.html"><strong aria-hidden="true">3.1.</strong> Anatomy of a Gopher</a></li><li class="chapter-item expanded "><div><strong aria-hidden="true">3.2.</strong> Flare 8 (2021)</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="credchecker.html"><strong aria-hidden="true">3.2.1.</strong> credchecker</a></li></ol></li></ol></li><li class="chapter-item expanded "><div><strong aria-hidden="true">4.</strong> Other</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="half-handshake-crack.html" class="active"><strong aria-hidden="true">4.1.</strong> Half-Handshake Crack</a></li><li class="chapter-item expanded "><a href="tn-wn722n-monitor-mode.html"><strong aria-hidden="true">4.2.</strong> TN-WN722N Monitor Mode</a></li><li class="chapter-item expanded "><a href="awus036ach-monitor-mode.html"><strong aria-hidden="true">4.3.</strong> AWUS036ACH Monitor Mode</a></li><li class="chapter-item expanded "><a href="rpi-rtl88x2bu-evil-AP.html"><strong aria-hidden="true">4.4.</strong> RTL88x2bu Fake Access Point</a></li><li class="chapter-item expanded "><a href="windows-cheatsheet.html"><strong aria-hidden="true">4.5.</strong> Windows Cheatsheet</a></li></ol></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -135,19 +134,69 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="document-not-found-404"><a class="header" href="#document-not-found-404">Document not found (404)</a></h1>
-<p>This URL is invalid, sorry. Please use the navigation bar or search to continue.</p>
+                        <h1 id="half-handshake-crack"><a class="header" href="#half-handshake-crack">Half-Handshake Crack</a></h1>
+<p>Sometimes when waiting for handshakes you will catch only the half part of that handshake, that is without the handshake being acknowledged by the network in question.
+Know that those handshakes can be extremely useful in certain scenarios.</p>
+<p>When listening for handshakes in public places, you will often see half handshakes popped up in your capture file (or wireshark, or whatever you use). These handshakes are as much crackable as full three-way handshakes, thing is you can't know for sure if the password is right since half-handshake aren't acknowledge by the router.</p>
+<p>You can capture Half Handshake pretty easily, first you need an adapter that his compatible with the aircrack-ng suite, here's a small list of chipset compatible with aicrack.</p>
+<ul>
+<li>Ralink RT8070, RT3070</li>
+<li>Ralink RT2770, RT2750</li>
+<li>Ralink RT3572, RT5572</li>
+<li>Ralink RT5370N</li>
+<li>Realtek RTL8812AU</li>
+<li>Atheros AR9002U</li>
+<li>Realtek RTL8188SU</li>
+<li>Realtek RTL8192EU</li>
+<li>Atheros AR9271</li>
+</ul>
+<p>Next thing to do is to install the right drivers for the adapter your going to use, i use Atheros AR9002U (TN-WN722N) and RTL8812AU (AWUS036ACH), so i installed the following drivers to get started.</p>
+<pre><code>$ git clone https://github.com/aircrack-ng/rtl8188eus
+$ git clone https://github.com/aircrack-ng/rtl8812au
+</code></pre>
+<p>Then you should be ready to go, enable monitor mode (don't forget to change your mac address <em>wink wink</em>), start airodump.</p>
+<pre><code>$ sudo airodump-ng &lt;device&gt;
+</code></pre>
+<p>Find a target network (make sure you have the right to crack it), and note the channel the network is currently using. Now let's start the real things, we are going to want to see what's going on in the airodump capture for this reason we'll manually capture the handshake with wireshark instead of using the airodump --write switch.</p>
+<pre><code>$ sudo airodump-ng &lt;device&gt; -c &lt;network channel&gt; &amp; wireshark
+</code></pre>
+<p>Open the wireshark window, and double clikc on the interface your currently listening on with airodump, now you can copy the BSSID of your target network and we'll use a filter inside wireshark so we will see only the packets addressed to this network.</p>
+<pre><code>Wireshark BSSID Filter : wlan.ta == &lt;bssid&gt; || wlan.da == &lt;bssid&gt;
+Handshake filter : eapol &amp;&amp; wlan.da == &lt;bssid&gt; || eapol &amp;&amp; wlan.ta == &lt;bssid&gt;
+</code></pre>
+<p>Now you can wait until someone tries to connect to a network with a password, you should receive EAPOL packets when the key reach <strong>Message 2 of 4</strong>, you have your half handshake.</p>
+<h2 id="social-engineering-scenario"><a class="header" href="#social-engineering-scenario">Social Engineering Scenario</a></h2>
+<p>Okay let's go a little deeper because half-handshakes can be used in a tons of different scenario, but in this section we'll explore one. </p>
+<p>So here it is, you are currently in your home and you want to hack into your neighbor's wifi (totally unethical and illegal), but you can't seem to get any handshake out of their network, what you could do is make an Evil Access Point that looks exactly like your target network (same name, bssid) and put some random password on this network, you will also launch a ddos attack agains't the target network so that the victim can't connect to his real network. Now your neighbor get's home after a long day of work, he see's that he his disconnected from the network so he tries to connect to it, prompt is usual password and he see's that it doesn't work. </p>
+<p>At this point you should have catched at least a handshake or even more that you can crack, it's time to stop the attack and allow your poor neighbor to connect back again to it's network.</p>
+<p>Check on wireshark using the <strong>eapol</strong> filter or the Handshake filter i shown a little earlier, if you have eapol packets with &quot;Key (Message 2 of 4)&quot; this means you successfully captured your half-handshake ! Save the capture to a .pcap file and we can go to the next step.</p>
+<h2 id="time-to-crack"><a class="header" href="#time-to-crack">Time to crack</a></h2>
+<p>Now you have successfully gotten your hands on your handshake it's time to crack it. For this, you can use either a predefined wordlist (works sometimes), or if you know the target you could build one based on your target, in this case i will show you using a predefined wordlist <strong>rockyou.txt</strong>, the command is the same as usual but i will still show it.</p>
+<pre><code>aircrack-ng -w /usr/share/wordlists/rockyou.txt &lt;capture file&gt;
+</code></pre>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="credchecker.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+                            <a rel="next" href="tn-wn722n-monitor-mode.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
                         <div style="clear: both"></div>
                     </nav>
                 </div>
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="credchecker.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+                    <a rel="next" href="tn-wn722n-monitor-mode.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
             </nav>
 
         </div>
