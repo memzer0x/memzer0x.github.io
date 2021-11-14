@@ -162,8 +162,8 @@ You can use <strong>objdump</strong> along with <strong>go tool</strong> to dump
 $ go tool objdump &lt;arguments&gt; &lt;bin&gt;
 </code></pre>
 <p>A big advantage of using <strong>go tool objdump</strong> is that you get line numbers in code.This can help you group instructions by operations.</p>
-<p>*Note that pretty much every disassembler does a great job at disassembling go binaries, this includes (r2, ghidra, ida, cutter, binary ninja, hopper, gdb,...).</p>
-<p>Usually it is a best practice to use as many disassembler as you can and compare and catch on differences in the output, i usually like ghidra + ida or ida + binary ninja*</p>
+<p><em>Note that pretty much every disassembler does a great job at disassembling go binaries, this includes (r2, ghidra, ida, cutter, binary ninja, hopper, gdb,...).</em></p>
+<p><em>Usually it is a best practice to use as many disassembler as you can and compare and catch on differences in the output, i usually like ghidra + ida or ida + binary ninja</em></p>
 <h2 id="default-protections-on-go-binaries"><a class="header" href="#default-protections-on-go-binaries">Default Protections on Go Binaries</a></h2>
 <p>When you run go build, it should enable <strong>NX</strong> <em>(or No Execute if you prefer)</em> by default on the resulting binary. </p>
 <p>However note that <strong>Position Independent Code (PIC or PIE) and Stack Canaries</strong> are usually disabled <strong>by default</strong>, also note that binaries are not stripped.</p>
@@ -174,7 +174,6 @@ $ go tool objdump &lt;arguments&gt; &lt;bin&gt;
 <li>Enable PIE <code>export GOFLAGS='-buildmode=pie'</code></li>
 <li>Strip functions names and reduce size <code>Get UPX and pack the file</code></li>
 </ul>
-<p>`</p>
 
                     </main>
 
