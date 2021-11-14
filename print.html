@@ -76,7 +76,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="introduction.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><div><strong aria-hidden="true">2.</strong> Exploitation</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="cve-2015-3887.html"><strong aria-hidden="true">2.1.</strong> CVE-2015-3887</a></li></ol></li><li class="chapter-item expanded "><div><strong aria-hidden="true">3.</strong> Reverse Engineering</div></li><li><ol class="section"><li class="chapter-item expanded "><div><strong aria-hidden="true">3.1.</strong> Flare 8 (2021)</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="credchecker.html"><strong aria-hidden="true">3.1.1.</strong> credchecker</a></li></ol></li></ol></li><li class="chapter-item expanded "><div><strong aria-hidden="true">4.</strong> Other</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="tn-wn722n-monitor-mode.html"><strong aria-hidden="true">4.1.</strong> TN-WN722N Monitor Mode</a></li><li class="chapter-item expanded "><a href="awus036ach-monitor-mode.html"><strong aria-hidden="true">4.2.</strong> AWUS036ACH Monitor Mode</a></li><li class="chapter-item expanded "><a href="rpi-rtl88x2bu-evil-AP.html"><strong aria-hidden="true">4.3.</strong> RTL88x2bu Fake Access Point</a></li><li class="chapter-item expanded "><a href="windows-cheatsheet.html"><strong aria-hidden="true">4.4.</strong> Windows Cheatsheet</a></li></ol></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="introduction.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><div><strong aria-hidden="true">2.</strong> Exploitation</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="cve-2015-3887.html"><strong aria-hidden="true">2.1.</strong> CVE-2015-3887</a></li></ol></li><li class="chapter-item expanded "><div><strong aria-hidden="true">3.</strong> Reverse Engineering</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="anatomy-of-a-gopher.html"><strong aria-hidden="true">3.1.</strong> Anatomy of a Gopher</a></li><li class="chapter-item expanded "><div><strong aria-hidden="true">3.2.</strong> Flare 8 (2021)</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="credchecker.html"><strong aria-hidden="true">3.2.1.</strong> credchecker</a></li></ol></li></ol></li><li class="chapter-item expanded "><div><strong aria-hidden="true">4.</strong> Other</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="tn-wn722n-monitor-mode.html"><strong aria-hidden="true">4.1.</strong> TN-WN722N Monitor Mode</a></li><li class="chapter-item expanded "><a href="awus036ach-monitor-mode.html"><strong aria-hidden="true">4.2.</strong> AWUS036ACH Monitor Mode</a></li><li class="chapter-item expanded "><a href="rpi-rtl88x2bu-evil-AP.html"><strong aria-hidden="true">4.3.</strong> RTL88x2bu Fake Access Point</a></li><li class="chapter-item expanded "><a href="windows-cheatsheet.html"><strong aria-hidden="true">4.4.</strong> Windows Cheatsheet</a></li></ol></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -216,6 +216,47 @@ int socket(){
 <li>Bypass the default libproxychains4.so using our exploit</li>
 </ol>
 <p>Just put the newly compiled file inside the same directory as the proxychains binary, make sure the name of the shared object is <strong>libproxychains4.so</strong> and you should get a shell...</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="anatomy-of-a-gopher"><a class="header" href="#anatomy-of-a-gopher">Anatomy of a Gopher</a></h1>
+<p>This sections are my notes relating the SANS talk &quot;Anatomy of a Gopher&quot;, by hex0punk (Alex Useche). The talk is still available on youtube at the following link <a href="%22https://www.youtube.com/watch?v=wWNbnEp_4ZE%22">talk</a>.</p>
+<h2 id="what-are-we-doing"><a class="header" href="#what-are-we-doing">What are we doing</a></h2>
+<ul>
+<li>Learning about what makes go binaries different than C and C++ binaries.</li>
+<li>Identifying techniques for recognizing and conducting analysis of go binaries.</li>
+<li>Tips for finding vulnerabilities in go binaries.</li>
+<li>Identifying common patterns found in go binaries.</li>
+<li>Learning about protections that can be added to go binaries</li>
+</ul>
+<h2 id="the-go-assembler"><a class="header" href="#the-go-assembler">The GO Assembler</a></h2>
+<ul>
+<li>The go compiler is based on plan9 compiler.</li>
+<li>Semi-abstract instruction set.</li>
+<li>Pseudo-Assembly.</li>
+<li>Not a direct representation of the underlying machine (i.e MOV may be a LD)</li>
+<li>It also introduces a set of pseudo registers (that you might not have seen before).</li>
+</ul>
+<h2 id="tools"><a class="header" href="#tools">Tools</a></h2>
+<ul>
+<li><strong>Go Tool Objdump</strong>
+You can use <strong>objdump</strong> along with <strong>go tool</strong> to dump binary informations (functions, sections,...) </li>
+</ul>
+<p>You would typically use it the following way.</p>
+<pre><code>$ go tool objdump -s &lt;func&gt; &lt;bin&gt; 
+$ go tool objdump &lt;arguments&gt; &lt;bin&gt;
+</code></pre>
+<p>A big advantage of using <strong>go tool objdump</strong> is that you get line numbers in code.This can help you group instructions by operations.</p>
+<p>*Note that pretty much every disassembler does a great job at disassembling go binaries, this includes (r2, ghidra, ida, cutter, binary ninja, hopper, gdb,...).</p>
+<p>Usually it is a best practice to use as many disassembler as you can and compare and catch on differences in the output, i usually like ghidra + ida or ida + binary ninja*</p>
+<h2 id="default-protections-on-go-binaries"><a class="header" href="#default-protections-on-go-binaries">Default Protections on Go Binaries</a></h2>
+<p>When you run go build, it should enable <strong>NX</strong> <em>(or No Execute if you prefer)</em> by default on the resulting binary. </p>
+<p>However note that <strong>Position Independent Code (PIC or PIE) and Stack Canaries</strong> are usually disabled <strong>by default</strong>, also note that binaries are not stripped.</p>
+<h4 id="how-to-enable-protections-on-go-binaries"><a class="header" href="#how-to-enable-protections-on-go-binaries">How to enable protections on Go binaries.</a></h4>
+<ul>
+<li>Enable Stack Protections <code>export CGO_LDFLAGS='-fstack-protector'</code></li>
+<li>Strip the binary <code>GOOS=linux go build -ldflags=&quot;-s -w&quot;</code></li>
+<li>Enable PIE <code>export GOFLAGS='-buildmode=pie'</code></li>
+<li>Strip functions names and reduce size <code>Get UPX and pack the file</code></li>
+</ul>
+<p>`</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="credchecker"><a class="header" href="#credchecker">Credchecker</a></h1>
 <p>Credchecker is the first challenge of the Flare-On 8 (2021) CTF Event and it was super easy to complete.</p>
 <h2 id="the-challenge"><a class="header" href="#the-challenge">The Challenge</a></h2>

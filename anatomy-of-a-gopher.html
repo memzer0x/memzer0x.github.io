@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>AWUS036ACH Monitor Mode - Exploitation Freaks</title>
+        <title>Anatomy of a Gopher - Exploitation Freaks</title>
         <!-- Custom HTML head -->
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
@@ -75,7 +75,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="introduction.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><div><strong aria-hidden="true">2.</strong> Exploitation</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="cve-2015-3887.html"><strong aria-hidden="true">2.1.</strong> CVE-2015-3887</a></li></ol></li><li class="chapter-item expanded "><div><strong aria-hidden="true">3.</strong> Reverse Engineering</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="anatomy-of-a-gopher.html"><strong aria-hidden="true">3.1.</strong> Anatomy of a Gopher</a></li><li class="chapter-item expanded "><div><strong aria-hidden="true">3.2.</strong> Flare 8 (2021)</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="credchecker.html"><strong aria-hidden="true">3.2.1.</strong> credchecker</a></li></ol></li></ol></li><li class="chapter-item expanded "><div><strong aria-hidden="true">4.</strong> Other</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="tn-wn722n-monitor-mode.html"><strong aria-hidden="true">4.1.</strong> TN-WN722N Monitor Mode</a></li><li class="chapter-item expanded "><a href="awus036ach-monitor-mode.html" class="active"><strong aria-hidden="true">4.2.</strong> AWUS036ACH Monitor Mode</a></li><li class="chapter-item expanded "><a href="rpi-rtl88x2bu-evil-AP.html"><strong aria-hidden="true">4.3.</strong> RTL88x2bu Fake Access Point</a></li><li class="chapter-item expanded "><a href="windows-cheatsheet.html"><strong aria-hidden="true">4.4.</strong> Windows Cheatsheet</a></li></ol></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="introduction.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><div><strong aria-hidden="true">2.</strong> Exploitation</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="cve-2015-3887.html"><strong aria-hidden="true">2.1.</strong> CVE-2015-3887</a></li></ol></li><li class="chapter-item expanded "><div><strong aria-hidden="true">3.</strong> Reverse Engineering</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="anatomy-of-a-gopher.html" class="active"><strong aria-hidden="true">3.1.</strong> Anatomy of a Gopher</a></li><li class="chapter-item expanded "><div><strong aria-hidden="true">3.2.</strong> Flare 8 (2021)</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="credchecker.html"><strong aria-hidden="true">3.2.1.</strong> credchecker</a></li></ol></li></ol></li><li class="chapter-item expanded "><div><strong aria-hidden="true">4.</strong> Other</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="tn-wn722n-monitor-mode.html"><strong aria-hidden="true">4.1.</strong> TN-WN722N Monitor Mode</a></li><li class="chapter-item expanded "><a href="awus036ach-monitor-mode.html"><strong aria-hidden="true">4.2.</strong> AWUS036ACH Monitor Mode</a></li><li class="chapter-item expanded "><a href="rpi-rtl88x2bu-evil-AP.html"><strong aria-hidden="true">4.3.</strong> RTL88x2bu Fake Access Point</a></li><li class="chapter-item expanded "><a href="windows-cheatsheet.html"><strong aria-hidden="true">4.4.</strong> Windows Cheatsheet</a></li></ol></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -134,26 +134,56 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="monitor-mode-on-awus036ach"><a class="header" href="#monitor-mode-on-awus036ach">Monitor Mode on AWUS036ACH</a></h1>
-<p>Installing the required packages and configure them to make AWUS036ACH works in monitor mode is pretty straight forward, let's see how to do it.</p>
-<h2 id="arch-linux"><a class="header" href="#arch-linux">Arch Linux</a></h2>
-<pre><code class="language-bash">	pamcan -Syu
-	pacman -S install bc -y
-	 git clone https://github.com/aircrack-ng/rtl8812au.git
-	cd rtl8812au
-	make
-	sudo make install
-	reboot
+                        <h1 id="anatomy-of-a-gopher"><a class="header" href="#anatomy-of-a-gopher">Anatomy of a Gopher</a></h1>
+<p>This sections are my notes relating the SANS talk &quot;Anatomy of a Gopher&quot;, by hex0punk (Alex Useche). The talk is still available on youtube at the following link <a href="%22https://www.youtube.com/watch?v=wWNbnEp_4ZE%22">talk</a>.</p>
+<h2 id="what-are-we-doing"><a class="header" href="#what-are-we-doing">What are we doing</a></h2>
+<ul>
+<li>Learning about what makes go binaries different than C and C++ binaries.</li>
+<li>Identifying techniques for recognizing and conducting analysis of go binaries.</li>
+<li>Tips for finding vulnerabilities in go binaries.</li>
+<li>Identifying common patterns found in go binaries.</li>
+<li>Learning about protections that can be added to go binaries</li>
+</ul>
+<h2 id="the-go-assembler"><a class="header" href="#the-go-assembler">The GO Assembler</a></h2>
+<ul>
+<li>The go compiler is based on plan9 compiler.</li>
+<li>Semi-abstract instruction set.</li>
+<li>Pseudo-Assembly.</li>
+<li>Not a direct representation of the underlying machine (i.e MOV may be a LD)</li>
+<li>It also introduces a set of pseudo registers (that you might not have seen before).</li>
+</ul>
+<h2 id="tools"><a class="header" href="#tools">Tools</a></h2>
+<ul>
+<li><strong>Go Tool Objdump</strong>
+You can use <strong>objdump</strong> along with <strong>go tool</strong> to dump binary informations (functions, sections,...) </li>
+</ul>
+<p>You would typically use it the following way.</p>
+<pre><code>$ go tool objdump -s &lt;func&gt; &lt;bin&gt; 
+$ go tool objdump &lt;arguments&gt; &lt;bin&gt;
 </code></pre>
+<p>A big advantage of using <strong>go tool objdump</strong> is that you get line numbers in code.This can help you group instructions by operations.</p>
+<p>*Note that pretty much every disassembler does a great job at disassembling go binaries, this includes (r2, ghidra, ida, cutter, binary ninja, hopper, gdb,...).</p>
+<p>Usually it is a best practice to use as many disassembler as you can and compare and catch on differences in the output, i usually like ghidra + ida or ida + binary ninja*</p>
+<h2 id="default-protections-on-go-binaries"><a class="header" href="#default-protections-on-go-binaries">Default Protections on Go Binaries</a></h2>
+<p>When you run go build, it should enable <strong>NX</strong> <em>(or No Execute if you prefer)</em> by default on the resulting binary. </p>
+<p>However note that <strong>Position Independent Code (PIC or PIE) and Stack Canaries</strong> are usually disabled <strong>by default</strong>, also note that binaries are not stripped.</p>
+<h4 id="how-to-enable-protections-on-go-binaries"><a class="header" href="#how-to-enable-protections-on-go-binaries">How to enable protections on Go binaries.</a></h4>
+<ul>
+<li>Enable Stack Protections <code>export CGO_LDFLAGS='-fstack-protector'</code></li>
+<li>Strip the binary <code>GOOS=linux go build -ldflags=&quot;-s -w&quot;</code></li>
+<li>Enable PIE <code>export GOFLAGS='-buildmode=pie'</code></li>
+<li>Strip functions names and reduce size <code>Get UPX and pack the file</code></li>
+</ul>
+<p>`</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="tn-wn722n-monitor-mode.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="cve-2015-3887.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
-                            <a rel="next" href="rpi-rtl88x2bu-evil-AP.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next" href="credchecker.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
                         <div style="clear: both"></div>
@@ -162,10 +192,10 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="tn-wn722n-monitor-mode.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="cve-2015-3887.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
-                    <a rel="next" href="rpi-rtl88x2bu-evil-AP.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next" href="credchecker.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>
