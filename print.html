@@ -76,7 +76,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="introduction.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><div><strong aria-hidden="true">2.</strong> Exploitation</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="cve-2015-3887.html"><strong aria-hidden="true">2.1.</strong> CVE-2015-3887</a></li></ol></li><li class="chapter-item expanded "><div><strong aria-hidden="true">3.</strong> Reverse Engineering</div></li><li><ol class="section"><li class="chapter-item expanded "><div><strong aria-hidden="true">3.1.</strong> Arizona State University Notes</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="pwn-college-embryoasm_level6.html"><strong aria-hidden="true">3.1.1.</strong> EmbryoASM Level 6</a></li></ol></li><li class="chapter-item expanded "><a href="anatomy-of-a-gopher.html"><strong aria-hidden="true">3.2.</strong> Anatomy of a Gopher</a></li><li class="chapter-item expanded "><div><strong aria-hidden="true">3.3.</strong> Flare 8 (2021)</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="credchecker.html"><strong aria-hidden="true">3.3.1.</strong> credchecker</a></li></ol></li></ol></li><li class="chapter-item expanded "><div><strong aria-hidden="true">4.</strong> Other</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="half-handshake-crack.html"><strong aria-hidden="true">4.1.</strong> Half-Handshake Crack</a></li><li class="chapter-item expanded "><a href="tn-wn722n-monitor-mode.html"><strong aria-hidden="true">4.2.</strong> TN-WN722N Monitor Mode</a></li><li class="chapter-item expanded "><a href="awus036ach-monitor-mode.html"><strong aria-hidden="true">4.3.</strong> AWUS036ACH Monitor Mode</a></li><li class="chapter-item expanded "><a href="rpi-rtl88x2bu-evil-AP.html"><strong aria-hidden="true">4.4.</strong> RTL88x2bu Fake Access Point</a></li><li class="chapter-item expanded "><a href="windows-cheatsheet.html"><strong aria-hidden="true">4.5.</strong> Windows Cheatsheet</a></li></ol></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="introduction.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><div><strong aria-hidden="true">2.</strong> Exploitation</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="cve-2015-3887.html"><strong aria-hidden="true">2.1.</strong> CVE-2015-3887</a></li></ol></li><li class="chapter-item expanded "><div><strong aria-hidden="true">3.</strong> Reverse Engineering</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="anatomy-of-a-gopher.html"><strong aria-hidden="true">3.1.</strong> Anatomy of a Gopher</a></li><li class="chapter-item expanded "><div><strong aria-hidden="true">3.2.</strong> Arizona State University Notes</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="pwn-college-embryoasm_level6.html"><strong aria-hidden="true">3.2.1.</strong> EmbryoASM Level 6</a></li></ol></li><li class="chapter-item expanded "><div><strong aria-hidden="true">3.3.</strong> Flare 8 (2021)</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="credchecker.html"><strong aria-hidden="true">3.3.1.</strong> credchecker</a></li></ol></li></ol></li><li class="chapter-item expanded "><div><strong aria-hidden="true">4.</strong> Other</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="half-handshake-crack.html"><strong aria-hidden="true">4.1.</strong> Half-Handshake Crack</a></li><li class="chapter-item expanded "><a href="tn-wn722n-monitor-mode.html"><strong aria-hidden="true">4.2.</strong> TN-WN722N Monitor Mode</a></li><li class="chapter-item expanded "><a href="awus036ach-monitor-mode.html"><strong aria-hidden="true">4.3.</strong> AWUS036ACH Monitor Mode</a></li><li class="chapter-item expanded "><a href="rpi-rtl88x2bu-evil-AP.html"><strong aria-hidden="true">4.4.</strong> RTL88x2bu Fake Access Point</a></li><li class="chapter-item expanded "><a href="windows-cheatsheet.html"><strong aria-hidden="true">4.5.</strong> Windows Cheatsheet</a></li></ol></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -216,70 +216,6 @@ int socket(){
 <li>Bypass the default libproxychains4.so using our exploit</li>
 </ol>
 <p>Just put the newly compiled file inside the same directory as the proxychains binary, make sure the name of the shared object is <strong>libproxychains4.so</strong> and you should get a shell...</p>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="embryoasm-level-6"><a class="header" href="#embryoasm-level-6">EmbryoASM Level 6</a></h1>
-<p>So this challenge is a little bit harder since we need to compute the modulo of rdi with 256 and rsi with 65536 using only
-MOV instructions.</p>
-<p>Since i am nowhere near being a shifting, rotating and masking or mathematic wizard, i was struggling at the beginning of this challenge. But thanks to Kanak on discord, he showed us on video a little more how we were supposed to complete the challenge and everything start making sense for me.</p>
-<h2 id="how-it-works"><a class="header" href="#how-it-works">How it works</a></h2>
-<p>Basically the program asks us to modulo with 256 and 65536, note that :</p>
-<pre><code>- 4 is the biggest value 2 bits can address.
-- 16 is the biggest value 4 bits can address.
-- 256 is the biggest value 8 bits can address.
-- 65536 is the biggest value 16 bits can address.
-</code></pre>
-<p>When we talk about modulo, we always think about division and the remainder of it.</p>
-<p>But there's something special about modulo with 4, 16, 256, 65536,... :</p>
-<pre><code>- When we do modulo with 4 we're basically asking for the last 2 bits of that number (Square root of 4).
-- When we do modulo with 16 we're basically asking for the last 4 bits of that number (Square root of 16).
-- When we do modulo with 256 we're basically asking for only the last 8 bits of that number (Square root of 256).
-- When we modulo with 65536 we're basically asking for only the last 16 bits of that number (Square root of 65536).
-</code></pre>
-<p>Examples:</p>
-<pre><code>   9382 % 4 = 2         &lt;= Here we access the last 2 bits
-   9382 % 16 = 6       &lt;= Here we access the last 4 bits
-   9382 % 256 = 166     &lt;= Here we access the last 8 bits
-   9382 % 65536 = 9382  &lt;= Here we access the last 16 bits
-</code></pre>
-<pre><code>  2019249 % 4 = 1        &lt;= Here we access the last 2 bits
-  2019249 % 16 = 1      &lt;= Here we access the last 4 bits
-  2019249 % 256 = 177    &lt;= Here we access the last 8 bits
-  2019249 % 65536 = 53169 &lt;= Here we access the last 16 bits
-</code></pre>
-<pre><code>  0x12345678 % 4 = 0
-  0x12345678 % 16 = 0x8
-  0x12345678 % 256 = 0x78
-  0x12345678 % 65536 = 0x5678
-  0x12345678 % 4294967296 = 0x12345678
-
-  It is sometimes easier to see the pattern using hexadecimal characters.
-</code></pre>
-<p>But since we can't use division on the challenge we need to know how to compute modulo a different way...</p>
-<p>After a bit of research i stumbled across this post on stackoverflow where someone was asking different ways to modulo a certain value, i read that these operations are the same :</p>
-<pre><code>    9382 % 4 = 2
-    9382 &amp; (4 - 1) = 2        &lt;= Same as the precedent operation
-
-    9382 % 16 = 6
-    9382 &amp; (16 - 1) = 6       &lt;= Same as the precedent operation
-
-    9382 % 256 = 166
-    9382 &amp; (256 - 1) = 166    &lt;= Same as the precedent operation
-
-    9382 % 65536 = 9382
-    9382 &amp; (65536 - 1) = 9382 &lt;= Same as the precedent operation
-</code></pre>
-<pre><code>    0x12345678 % 16 = 0x8
-    0x12345678 &amp; (16 - 1) = 0x8
-
-    0x12345678 % 256 = 0x78
-    0x12345678 &amp; (256 - 1) = 0x78
-    
-    0x12345678 % 65536 = 0x5678
-    0x12345678 &amp; (65536 - 1) = 0x5678
-
-    0x12345678 % 4294967296 = 0x12345678
-    0x12345678 &amp; (4294967296 - 1) = 0x12345678
-</code></pre>
-<p>What we're doing is basically <em>masking</em> a number by <strong>AND'ing</strong> with (2 ** n bits we want to access - 1) and this does the same result as doing modulo on (2 ** n bits we want to access).</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="anatomy-of-a-gopher"><a class="header" href="#anatomy-of-a-gopher">Anatomy of a Gopher</a></h1>
 <p>This sections are my notes relating the SANS talk &quot;Anatomy of a Gopher&quot;, by hex0punk (Alex Useche). The talk is still available on youtube at the following link <a href="%22https://www.youtube.com/watch?v=wWNbnEp_4ZE%22">talk</a>.</p>
 <h2 id="what-are-we-doing"><a class="header" href="#what-are-we-doing">What are we doing</a></h2>
@@ -367,6 +303,70 @@ rabin2 is very useful when looking at go strings and is absolutely straightforwa
 <h2 id="reversing-in-action-golang-malware-used-in-the-solarwinds-attack-kaspersky"><a class="header" href="#reversing-in-action-golang-malware-used-in-the-solarwinds-attack-kaspersky">Reversing in action: Golang malware used in the SolarWinds attack (Kaspersky)</a></h2>
 <p>From now on, the notes are not related to the <strong>Anatomy of Go video</strong>, but on this <a href="https://www.youtube.com/watch?v=_cL-OwU9pFQ">Kaspersky course</a>. I highly recommend that you go watch the video too.</p>
 <p>This course is an absolute pearl and helped me a lot learn more about Go and Reverse Engineering, we focus principally on reversing a piece of malware that was used in the SolarWinds breach a little earlier this year, the malware in question is <strong>SunShuttle</strong>.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="embryoasm-level-6"><a class="header" href="#embryoasm-level-6">EmbryoASM Level 6</a></h1>
+<p>So this challenge is a little bit harder since we need to compute the modulo of rdi with 256 and rsi with 65536 using only
+MOV instructions.</p>
+<p>Since i am nowhere near being a shifting, rotating and masking or mathematic wizard, i was struggling at the beginning of this challenge. But thanks to Kanak on discord, he showed us on video a little more how we were supposed to complete the challenge and everything start making sense for me.</p>
+<h2 id="how-it-works"><a class="header" href="#how-it-works">How it works</a></h2>
+<p>Basically the program asks us to modulo with 256 and 65536, note that :</p>
+<pre><code>- 4 is the biggest value 2 bits can address.
+- 16 is the biggest value 4 bits can address.
+- 256 is the biggest value 8 bits can address.
+- 65536 is the biggest value 16 bits can address.
+</code></pre>
+<p>When we talk about modulo, we always think about division and the remainder of it.</p>
+<p>But there's something special about modulo with 4, 16, 256, 65536,... :</p>
+<pre><code>- When we do modulo with 4 we're basically asking for the last 2 bits of that number (Square root of 4).
+- When we do modulo with 16 we're basically asking for the last 4 bits of that number (Square root of 16).
+- When we do modulo with 256 we're basically asking for only the last 8 bits of that number (Square root of 256).
+- When we modulo with 65536 we're basically asking for only the last 16 bits of that number (Square root of 65536).
+</code></pre>
+<p>Examples:</p>
+<pre><code>   9382 % 4 = 2         &lt;= Here we access the last 2 bits
+   9382 % 16 = 6       &lt;= Here we access the last 4 bits
+   9382 % 256 = 166     &lt;= Here we access the last 8 bits
+   9382 % 65536 = 9382  &lt;= Here we access the last 16 bits
+</code></pre>
+<pre><code>  2019249 % 4 = 1        &lt;= Here we access the last 2 bits
+  2019249 % 16 = 1      &lt;= Here we access the last 4 bits
+  2019249 % 256 = 177    &lt;= Here we access the last 8 bits
+  2019249 % 65536 = 53169 &lt;= Here we access the last 16 bits
+</code></pre>
+<pre><code>  0x12345678 % 4 = 0
+  0x12345678 % 16 = 0x8
+  0x12345678 % 256 = 0x78
+  0x12345678 % 65536 = 0x5678
+  0x12345678 % 4294967296 = 0x12345678
+
+  It is sometimes easier to see the pattern using hexadecimal characters.
+</code></pre>
+<p>But since we can't use division on the challenge we need to know how to compute modulo a different way...</p>
+<p>After a bit of research i stumbled across this post on stackoverflow where someone was asking different ways to modulo a certain value, i read that these operations are the same :</p>
+<pre><code>    9382 % 4 = 2
+    9382 &amp; (4 - 1) = 2        &lt;= Same as the precedent operation
+
+    9382 % 16 = 6
+    9382 &amp; (16 - 1) = 6       &lt;= Same as the precedent operation
+
+    9382 % 256 = 166
+    9382 &amp; (256 - 1) = 166    &lt;= Same as the precedent operation
+
+    9382 % 65536 = 9382
+    9382 &amp; (65536 - 1) = 9382 &lt;= Same as the precedent operation
+</code></pre>
+<pre><code>    0x12345678 % 16 = 0x8
+    0x12345678 &amp; (16 - 1) = 0x8
+
+    0x12345678 % 256 = 0x78
+    0x12345678 &amp; (256 - 1) = 0x78
+    
+    0x12345678 % 65536 = 0x5678
+    0x12345678 &amp; (65536 - 1) = 0x5678
+
+    0x12345678 % 4294967296 = 0x12345678
+    0x12345678 &amp; (4294967296 - 1) = 0x12345678
+</code></pre>
+<p>What we're doing is basically <em>masking</em> a number by <strong>AND'ing</strong> with (2 ** n bits we want to access - 1) and this does the same result as doing modulo on (2 ** n bits we want to access).</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="credchecker"><a class="header" href="#credchecker">Credchecker</a></h1>
 <p>Credchecker is the first challenge of the Flare-On 8 (2021) CTF Event and it was super easy to complete.</p>
 <h2 id="the-challenge"><a class="header" href="#the-challenge">The Challenge</a></h2>
