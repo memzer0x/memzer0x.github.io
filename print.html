@@ -228,11 +228,12 @@ MOV instructions.</p>
 - 65536 is the biggest value 16 bits can address.
 </code></pre>
 <p>When we talk about modulo, we always think about division and the remainder of it.</p>
-<p>But there's something special about modulo with 4, 16, 256, 65536,... :
-- When we do modulo with 4 we're basically asking for the last 2 bits of that number (Square root of 4).
+<p>But there's something special about modulo with 4, 16, 256, 65536,... :</p>
+<pre><code>- When we do modulo with 4 we're basically asking for the last 2 bits of that number (Square root of 4).
 - When we do modulo with 16 we're basically asking for the last 4 bits of that number (Square root of 16).
 - When we do modulo with 256 we're basically asking for only the last 8 bits of that number (Square root of 256).
-- When we modulo with 65536 we're basically asking for only the last 16 bits of that number (Square root of 65536).</p>
+- When we modulo with 65536 we're basically asking for only the last 16 bits of that number (Square root of 65536).
+</code></pre>
 <p>Examples:</p>
 <pre><code>   9382 % 4 = 2         &lt;= Here we access the last 2 bits
    9382 % 16 = 6       &lt;= Here we access the last 4 bits
