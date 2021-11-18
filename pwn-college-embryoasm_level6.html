@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Half-Handshake Crack - Exploitation Freaks</title>
+        <title>EmbryoASM Level 6 - Exploitation Freaks</title>
         <!-- Custom HTML head -->
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
@@ -75,7 +75,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="introduction.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><div><strong aria-hidden="true">2.</strong> Exploitation</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="cve-2015-3887.html"><strong aria-hidden="true">2.1.</strong> CVE-2015-3887</a></li></ol></li><li class="chapter-item expanded "><div><strong aria-hidden="true">3.</strong> Reverse Engineering</div></li><li><ol class="section"><li class="chapter-item expanded "><div><strong aria-hidden="true">3.1.</strong> Arizona State University Notes</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="pwn-college-embryoasm_level6.html"><strong aria-hidden="true">3.1.1.</strong> EmbryoASM Level 6</a></li></ol></li><li class="chapter-item expanded "><a href="anatomy-of-a-gopher.html"><strong aria-hidden="true">3.2.</strong> Anatomy of a Gopher</a></li><li class="chapter-item expanded "><div><strong aria-hidden="true">3.3.</strong> Flare 8 (2021)</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="credchecker.html"><strong aria-hidden="true">3.3.1.</strong> credchecker</a></li></ol></li></ol></li><li class="chapter-item expanded "><div><strong aria-hidden="true">4.</strong> Other</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="half-handshake-crack.html" class="active"><strong aria-hidden="true">4.1.</strong> Half-Handshake Crack</a></li><li class="chapter-item expanded "><a href="tn-wn722n-monitor-mode.html"><strong aria-hidden="true">4.2.</strong> TN-WN722N Monitor Mode</a></li><li class="chapter-item expanded "><a href="awus036ach-monitor-mode.html"><strong aria-hidden="true">4.3.</strong> AWUS036ACH Monitor Mode</a></li><li class="chapter-item expanded "><a href="rpi-rtl88x2bu-evil-AP.html"><strong aria-hidden="true">4.4.</strong> RTL88x2bu Fake Access Point</a></li><li class="chapter-item expanded "><a href="windows-cheatsheet.html"><strong aria-hidden="true">4.5.</strong> Windows Cheatsheet</a></li></ol></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="introduction.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><div><strong aria-hidden="true">2.</strong> Exploitation</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="cve-2015-3887.html"><strong aria-hidden="true">2.1.</strong> CVE-2015-3887</a></li></ol></li><li class="chapter-item expanded "><div><strong aria-hidden="true">3.</strong> Reverse Engineering</div></li><li><ol class="section"><li class="chapter-item expanded "><div><strong aria-hidden="true">3.1.</strong> Arizona State University Notes</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="pwn-college-embryoasm_level6.html" class="active"><strong aria-hidden="true">3.1.1.</strong> EmbryoASM Level 6</a></li></ol></li><li class="chapter-item expanded "><a href="anatomy-of-a-gopher.html"><strong aria-hidden="true">3.2.</strong> Anatomy of a Gopher</a></li><li class="chapter-item expanded "><div><strong aria-hidden="true">3.3.</strong> Flare 8 (2021)</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="credchecker.html"><strong aria-hidden="true">3.3.1.</strong> credchecker</a></li></ol></li></ol></li><li class="chapter-item expanded "><div><strong aria-hidden="true">4.</strong> Other</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="half-handshake-crack.html"><strong aria-hidden="true">4.1.</strong> Half-Handshake Crack</a></li><li class="chapter-item expanded "><a href="tn-wn722n-monitor-mode.html"><strong aria-hidden="true">4.2.</strong> TN-WN722N Monitor Mode</a></li><li class="chapter-item expanded "><a href="awus036ach-monitor-mode.html"><strong aria-hidden="true">4.3.</strong> AWUS036ACH Monitor Mode</a></li><li class="chapter-item expanded "><a href="rpi-rtl88x2bu-evil-AP.html"><strong aria-hidden="true">4.4.</strong> RTL88x2bu Fake Access Point</a></li><li class="chapter-item expanded "><a href="windows-cheatsheet.html"><strong aria-hidden="true">4.5.</strong> Windows Cheatsheet</a></li></ol></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -134,55 +134,77 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="half-handshake-crack"><a class="header" href="#half-handshake-crack">Half-Handshake Crack</a></h1>
-<p>Sometimes when waiting for handshakes you will catch only the half part of that handshake, that is without the handshake being acknowledged by the network in question.
-Know that those handshakes can be extremely useful in certain scenarios.</p>
-<p>When listening for handshakes in public places, you will often see half handshakes popped up in your capture file (or wireshark, or whatever you use). These handshakes are as much crackable as full three-way handshakes, thing is you can't know for sure if the password is right since half-handshake aren't acknowledge by the router.</p>
-<p>You can capture Half Handshake pretty easily, first you need an adapter that his compatible with the aircrack-ng suite, here's a small list of chipset compatible with aicrack.</p>
-<ul>
-<li>Ralink RT8070, RT3070</li>
-<li>Ralink RT2770, RT2750</li>
-<li>Ralink RT3572, RT5572</li>
-<li>Ralink RT5370N</li>
-<li>Realtek RTL8812AU</li>
-<li>Atheros AR9002U</li>
-<li>Realtek RTL8188SU</li>
-<li>Realtek RTL8192EU</li>
-<li>Atheros AR9271</li>
-</ul>
-<p>Next thing to do is to install the right drivers for the adapter your going to use, i use Atheros AR9002U (TN-WN722N) and RTL8812AU (AWUS036ACH), so i installed the following drivers to get started.</p>
-<pre><code>$ git clone https://github.com/aircrack-ng/rtl8188eus
-$ git clone https://github.com/aircrack-ng/rtl8812au
+                        <h1 id="pwncollege-embryoasm-level-6"><a class="header" href="#pwncollege-embryoasm-level-6">PWN.COLLEGE EmbryoASM Level 6</a></h1>
+<p>So this challenge is a little bit harder since we need to compute the modulo of rdi with 256 and rsi with 65536 using only
+MOV instructions.</p>
+<p>Since i am nowhere near being a shifting, rotating and masking or mathematic wizard, i was struggling at the beginning of this challenge. But thanks to Kanak on discord, he showed us on video a little more how we were supposed to complete the challenge and everything start making sense for me.</p>
+<h2 id="how-it-works"><a class="header" href="#how-it-works">How it works</a></h2>
+<p>Basically the program asks us to modulo with 256 and 65536, note that :
+- 4 is the biggest value 2 bits can address.
+- 16 is the biggest value 4 bits can address.
+- 256 is the biggest value 8 bits can address.
+- 65536 is the biggest value 16 bits can address.</p>
+<p>When we talk about modulo, we always think about division and the remainder of it.</p>
+<p>But there's something special about modulo with 4, 16, 256, 65536,... :
+- When we do modulo with 4 we're basically asking for the last 2 bits of that number (Square root of 4).
+- When we do modulo with 16 we're basically asking for the last 4 bits of that number (Square root of 16).
+- When we do modulo with 256 we're basically asking for only the last 8 bits of that number (Square root of 256).
+- When we modulo with 65536 we're basically asking for only the last 16 bits of that number (Square root of 65536).</p>
+<p>Examples:</p>
+<pre><code>   9382 % 4 = 2         &lt;= Here we access the last 2 bits
+   9382 % 16 = 6       &lt;= Here we access the last 4 bits
+   9382 % 256 = 166     &lt;= Here we access the last 8 bits
+   9382 % 65536 = 9382  &lt;= Here we access the last 16 bits
 </code></pre>
-<p>Then you should be ready to go, enable monitor mode (don't forget to change your mac address <em>wink wink</em>), start airodump.</p>
-<pre><code>$ sudo airodump-ng &lt;device&gt;
+<pre><code>  2019249 % 4 = 1        &lt;= Here we access the last 2 bits
+  2019249 % 16 = 1      &lt;= Here we access the last 4 bits
+  2019249 % 256 = 177    &lt;= Here we access the last 8 bits
+  2019249 % 65536 = 53169 &lt;= Here we access the last 16 bits
 </code></pre>
-<p>Find a target network (make sure you have the right to crack it), and note the channel the network is currently using. Now let's start the real things, we are going to want to see what's going on in the airodump capture for this reason we'll manually capture the handshake with wireshark instead of using the airodump --write switch.</p>
-<pre><code>$ sudo airodump-ng &lt;device&gt; -c &lt;network channel&gt; &amp; wireshark
+<pre><code>  0x12345678 % 4 = 0
+  0x12345678 % 16 = 0x8
+  0x12345678 % 256 = 0x78
+  0x12345678 % 65536 = 0x5678
+  0x12345678 % 4294967296 = 0x12345678
+
+  It is sometimes easier to see the pattern using hexadecimal characters.
 </code></pre>
-<p>Open the wireshark window, and double click on the interface your currently listening on with airodump, now you can copy the BSSID of your target network and we'll use a filter inside wireshark so we will see only the packets addressed to this network.</p>
-<pre><code>Wireshark BSSID Filter : wlan.ta == &lt;bssid&gt; || wlan.da == &lt;bssid&gt;
-Handshake filter : eapol &amp;&amp; wlan.da == &lt;bssid&gt; || eapol &amp;&amp; wlan.ta == &lt;bssid&gt;
+<p>But since we can't use division on the challenge we need to know how to compute modulo a different way...</p>
+<p>After a bit of research i stumbled across this post on stackoverflow where someone was asking different ways to modulo a certain value, i read that these operations are the same :</p>
+<pre><code>    9382 % 4 = 2
+    9382 &amp; (4 - 1) = 2        &lt;= Same as the precedent operation
+
+    9382 % 16 = 6
+    9382 &amp; (16 - 1) = 6       &lt;= Same as the precedent operation
+
+    9382 % 256 = 166
+    9382 &amp; (256 - 1) = 166    &lt;= Same as the precedent operation
+
+    9382 % 65536 = 9382
+    9382 &amp; (65536 - 1) = 9382 &lt;= Same as the precedent operation
 </code></pre>
-<p>Now you can wait until someone tries to connect to the network with a password, you should capture EAPOL packets when the key reach <strong>Message 2 of 4</strong>, you know you have your half handshake.</p>
-<h2 id="social-engineering-scenario"><a class="header" href="#social-engineering-scenario">Social Engineering Scenario</a></h2>
-<p>Okay let's go a little deeper because half-handshakes can be used in a tons of different scenario, but in this section we'll explore one. </p>
-<p>So here it is, you are currently in your home and you want to hack into your neighbor's wifi (totally unethical and illegal), but you can't seem to get any handshake out of their network, what you could do is make an Evil Access Point that looks exactly like your target network (same name, bssid) and put some random password on this network, you will also launch a ddos attack agains't the target network so that the victim can't connect to his real network. Now your neighbor get's home after a long day of work, he see's that he his disconnected from the network so he tries to connect to it, prompt is usual password and he see's that it doesn't work. </p>
-<p>At this point you should have catched at least a handshake or even more that you can crack, it's time to stop the attack and allow your poor neighbor to connect back again to it's network.</p>
-<p>Check on wireshark using the <strong>eapol</strong> filter or the Handshake filter i shown a little earlier, if you have eapol packets with &quot;Key (Message 2 of 4)&quot; this means you successfully captured your half-handshake. Save the capture to a .pcap file and we can go to the next step.</p>
-<h2 id="time-to-crack"><a class="header" href="#time-to-crack">Time to crack</a></h2>
-<p>Now you have successfully gotten your hands on your handshake it's time to crack it. For this, you can use either a predefined wordlist (works sometimes), or if you know the target you could build one based on your target, in this case i will show you using a predefined wordlist <strong>rockyou.txt</strong>, the command is the same as usual but i will still show it.</p>
-<pre><code>aircrack-ng -w /usr/share/wordlists/rockyou.txt &lt;capture file&gt;
+<pre><code>    0x12345678 % 16 = 0x8
+    0x12345678 &amp; (16 - 1) = 0x8
+
+    0x12345678 % 256 = 0x78
+    0x12345678 &amp; (256 - 1) = 0x78
+    
+    0x12345678 % 65536 = 0x5678
+    0x12345678 &amp; (65536 - 1) = 0x5678
+
+    0x12345678 % 4294967296 = 0x12345678
+    0x12345678 &amp; (4294967296 - 1) = 0x12345678
 </code></pre>
+<p>What we're doing is basically <em>masking</em> a number by <strong>AND'ing</strong> with (2 ** n bits we want to access - 1) and this does the same result as doing modulo on (2 ** n bits we want to access).</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="credchecker.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="cve-2015-3887.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
-                            <a rel="next" href="tn-wn722n-monitor-mode.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next" href="anatomy-of-a-gopher.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
                         <div style="clear: both"></div>
@@ -191,10 +213,10 @@ Handshake filter : eapol &amp;&amp; wlan.da == &lt;bssid&gt; || eapol &amp;&amp;
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="credchecker.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="cve-2015-3887.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
-                    <a rel="next" href="tn-wn722n-monitor-mode.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next" href="anatomy-of-a-gopher.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>

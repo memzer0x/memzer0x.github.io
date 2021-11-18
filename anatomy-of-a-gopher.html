@@ -75,7 +75,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="introduction.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><div><strong aria-hidden="true">2.</strong> Exploitation</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="cve-2015-3887.html"><strong aria-hidden="true">2.1.</strong> CVE-2015-3887</a></li></ol></li><li class="chapter-item expanded "><div><strong aria-hidden="true">3.</strong> Reverse Engineering</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="anatomy-of-a-gopher.html" class="active"><strong aria-hidden="true">3.1.</strong> Anatomy of a Gopher</a></li><li class="chapter-item expanded "><div><strong aria-hidden="true">3.2.</strong> Flare 8 (2021)</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="credchecker.html"><strong aria-hidden="true">3.2.1.</strong> credchecker</a></li></ol></li></ol></li><li class="chapter-item expanded "><div><strong aria-hidden="true">4.</strong> Other</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="half-handshake-crack.html"><strong aria-hidden="true">4.1.</strong> Half-Handshake Crack</a></li><li class="chapter-item expanded "><a href="tn-wn722n-monitor-mode.html"><strong aria-hidden="true">4.2.</strong> TN-WN722N Monitor Mode</a></li><li class="chapter-item expanded "><a href="awus036ach-monitor-mode.html"><strong aria-hidden="true">4.3.</strong> AWUS036ACH Monitor Mode</a></li><li class="chapter-item expanded "><a href="rpi-rtl88x2bu-evil-AP.html"><strong aria-hidden="true">4.4.</strong> RTL88x2bu Fake Access Point</a></li><li class="chapter-item expanded "><a href="windows-cheatsheet.html"><strong aria-hidden="true">4.5.</strong> Windows Cheatsheet</a></li></ol></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="introduction.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><div><strong aria-hidden="true">2.</strong> Exploitation</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="cve-2015-3887.html"><strong aria-hidden="true">2.1.</strong> CVE-2015-3887</a></li></ol></li><li class="chapter-item expanded "><div><strong aria-hidden="true">3.</strong> Reverse Engineering</div></li><li><ol class="section"><li class="chapter-item expanded "><div><strong aria-hidden="true">3.1.</strong> Arizona State University Notes</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="pwn-college-embryoasm_level6.html"><strong aria-hidden="true">3.1.1.</strong> EmbryoASM Level 6</a></li></ol></li><li class="chapter-item expanded "><a href="anatomy-of-a-gopher.html" class="active"><strong aria-hidden="true">3.2.</strong> Anatomy of a Gopher</a></li><li class="chapter-item expanded "><div><strong aria-hidden="true">3.3.</strong> Flare 8 (2021)</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="credchecker.html"><strong aria-hidden="true">3.3.1.</strong> credchecker</a></li></ol></li></ol></li><li class="chapter-item expanded "><div><strong aria-hidden="true">4.</strong> Other</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="half-handshake-crack.html"><strong aria-hidden="true">4.1.</strong> Half-Handshake Crack</a></li><li class="chapter-item expanded "><a href="tn-wn722n-monitor-mode.html"><strong aria-hidden="true">4.2.</strong> TN-WN722N Monitor Mode</a></li><li class="chapter-item expanded "><a href="awus036ach-monitor-mode.html"><strong aria-hidden="true">4.3.</strong> AWUS036ACH Monitor Mode</a></li><li class="chapter-item expanded "><a href="rpi-rtl88x2bu-evil-AP.html"><strong aria-hidden="true">4.4.</strong> RTL88x2bu Fake Access Point</a></li><li class="chapter-item expanded "><a href="windows-cheatsheet.html"><strong aria-hidden="true">4.5.</strong> Windows Cheatsheet</a></li></ol></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -203,6 +203,7 @@ rabin2 is very useful when looking at go strings and is absolutely straightforwa
 <li>This is called because go can't be sure the function will outgrow the stack (i.e recursive functions) given non-deterministic goroutines.</li>
 <li>When this occurs, stack grows, pointers in the stack are updated.</li>
 <li>Additionally, each function compares its stack pointer against <strong>g-&gt;stackguard</strong> to check for overflow.</li>
+<li>Go uses 8 byte alignment on stack.</li>
 </ul>
 <h2 id="conventions-arguments-and-return-values"><a class="header" href="#conventions-arguments-and-return-values">Conventions (Arguments and Return Values)</a></h2>
 <p>Go binaries places return values on the stack, as opposed to C where return values are placed in registers (usually eax for x86).</p>
@@ -217,12 +218,15 @@ rabin2 is very useful when looking at go strings and is absolutely straightforwa
 <li>Then we test if the value is nil.</li>
 <li>And branch depending on the result.</li>
 </ul>
+<h2 id="reversing-in-action-golang-malware-used-in-the-solarwinds-attack-kaspersky"><a class="header" href="#reversing-in-action-golang-malware-used-in-the-solarwinds-attack-kaspersky">Reversing in action: Golang malware used in the SolarWinds attack (Kaspersky)</a></h2>
+<p>From now on, the notes are not related to the <strong>Anatomy of Go video</strong>, but on this <a href="https://www.youtube.com/watch?v=_cL-OwU9pFQ">Kaspersky course</a>. I highly recommend that you go watch the video too.</p>
+<p>This course is an absolute pearl and helped me a lot learn more about Go and Reverse Engineering, we focus principally on reversing a piece of malware that was used in the SolarWinds breach a little earlier this year, the malware in question is <strong>SunShuttle</strong>.</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="cve-2015-3887.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="pwn-college-embryoasm_level6.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
                             <a rel="next" href="credchecker.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
@@ -234,7 +238,7 @@ rabin2 is very useful when looking at go strings and is absolutely straightforwa
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="cve-2015-3887.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="pwn-college-embryoasm_level6.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
                     <a rel="next" href="credchecker.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
