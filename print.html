@@ -216,16 +216,17 @@ int socket(){
 <li>Bypass the default libproxychains4.so using our exploit</li>
 </ol>
 <p>Just put the newly compiled file inside the same directory as the proxychains binary, make sure the name of the shared object is <strong>libproxychains4.so</strong> and you should get a shell...</p>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="pwncollege-embryoasm-level-6"><a class="header" href="#pwncollege-embryoasm-level-6">PWN.COLLEGE EmbryoASM Level 6</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="embryoasm-level-6"><a class="header" href="#embryoasm-level-6">EmbryoASM Level 6</a></h1>
 <p>So this challenge is a little bit harder since we need to compute the modulo of rdi with 256 and rsi with 65536 using only
 MOV instructions.</p>
 <p>Since i am nowhere near being a shifting, rotating and masking or mathematic wizard, i was struggling at the beginning of this challenge. But thanks to Kanak on discord, he showed us on video a little more how we were supposed to complete the challenge and everything start making sense for me.</p>
 <h2 id="how-it-works"><a class="header" href="#how-it-works">How it works</a></h2>
-<p>Basically the program asks us to modulo with 256 and 65536, note that :
-- 4 is the biggest value 2 bits can address.
+<p>Basically the program asks us to modulo with 256 and 65536, note that :</p>
+<pre><code>- 4 is the biggest value 2 bits can address.
 - 16 is the biggest value 4 bits can address.
 - 256 is the biggest value 8 bits can address.
-- 65536 is the biggest value 16 bits can address.</p>
+- 65536 is the biggest value 16 bits can address.
+</code></pre>
 <p>When we talk about modulo, we always think about division and the remainder of it.</p>
 <p>But there's something special about modulo with 4, 16, 256, 65536,... :
 - When we do modulo with 4 we're basically asking for the last 2 bits of that number (Square root of 4).
