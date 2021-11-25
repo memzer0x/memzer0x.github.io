@@ -367,6 +367,64 @@ MOV instructions.</p>
     0x12345678 &amp; (4294967296 - 1) = 0x12345678
 </code></pre>
 <p>What we're doing is basically <em>masking</em> a number by <strong>AND'ing</strong> with (2 ** n bits we want to access - 1) and this does the same result as doing modulo on (2 ** n bits we want to access).</p>
+<p>Let's put this in practice and complete the challenge</p>
+<h2 id="solving-the-challenge"><a class="header" href="#solving-the-challenge">Solving the Challenge</a></h2>
+<p>Okay so completing the challenge was pretty simple, we are asked to do the following :</p>
+<pre><code>Welcome to EmbryoASMLevel6
+==================================================
+To interact with any level you will send raw bytes over stdin to this program.
+To efficiently solve these problems, first run it once to see what you need,
+then craft, assemble, and pipe your bytes to this program.
+
+In this level you will be working with registers. You will be asked to modify
+or read from registers_use.
+
+We will now set some values in memory dynamically before each run. On each run
+the values will change. This means you will need to do some type of formulaic
+operation with registers_use. We will tell you which registers_use are set beforehand
+and where you should put the result. In most cases, its rax.
+
+Another cool concept in x86 is the independent access to lower register bytes.
+Each register in x86 is 64 bits in size, in the previous levels we have accessed
+the full register using rax, rdi or rsi. We can also access the lower bytes of
+each register using different register names. For example the lower
+32 bits of rax can be accessed using eax, lower 16 bits using ax,
+lower 8 bits using al, etc.
+MSB                                    LSB
++----------------------------------------+
+|                   rax                  |
++--------------------+-------------------+
+                     |        eax        |
+                     +---------+---------+
+                               |   ax    |
+                               +----+----+
+                               | ah | al |
+                               +----+----+
+Lower register bytes access is applicable to all registers_use.
+
+Using only the following instruction(s):
+mov
+Please compute the following:
+rax = rdi modulo 256
+rbx = rsi module 65536
+
+We will now set the following in preparation for your code:
+rdi = 0x57c5
+rsi = 0x4fe709fc
+
+
+Please give me your assembly in bytes (up to 0x1000 bytes):
+</code></pre>
+<p>Note that on x64 you can access the lower 8 bits of rsi and rdi, using sil and dil, respectively. </p>
+<p>This mean we can complete this challenge using only the mov instruction as asked.</p>
+<pre><code class="language-x86asm">.global _start
+.intel_syntax noprefix
+_start:
+    mov rax, 0      ; zero out rax
+    mov al, dil     ; take the last 8 bits of rdi into last 8 bits of rax
+    mov rbx, 0      ; zero out rbx
+    mov bx, si      ; take the last 16 bits of rsi into last 16 bits of rbx
+</code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="credchecker"><a class="header" href="#credchecker">Credchecker</a></h1>
 <p>Credchecker is the first challenge of the Flare-On 8 (2021) CTF Event and it was super easy to complete.</p>
 <h2 id="the-challenge"><a class="header" href="#the-challenge">The Challenge</a></h2>
