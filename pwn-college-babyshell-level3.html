@@ -144,7 +144,7 @@
 - <strong>push and pop</strong> can be easily used as a replacement for the <strong>mov</strong> instruction, just push the value on the stack and pop it back into any register you want, we will use this technique <strong>a LOT</strong>, this way we will spend less time trying to fix mov instructions with null bytes.</p>
 <p>With the preceding informations we should have a really got view of how we will solve this challenge.</p>
 <p>Let's start writing our shellcode, first we need a opened file descriptor to our flag file :</p>
-<pre><code class="language-x64asm">.global _start
+<pre><code class="language-x86asm">.global _start
 _start:
 .intel_syntax noprefix
 	# Open file descriptor
@@ -169,7 +169,7 @@ _start:
 <p>The function takes three arguments, the output file descriptor, the input file descriptor, the offset (in our case 0), and the count of bytes we wish to read.</p>
 <p>On x86_64 linux the kernel interface uses the following register as calling convention  : <strong>%rdi, %rsi, %rdx, %r10, %r8 and %r9.</strong> Since <strong>sendfile</strong> had 4 arguments, we will need <strong>%rdi, %rsi, %rdx, %r10</strong>.</p>
 <p>Let's write the second part of our shellcode :</p>
-<pre><code class="language-x64asm">.global _start
+<pre><code class="language-x86asm">.global _start
 _start:
 .intel_syntax noprefix
 	# Open file descriptor
@@ -196,7 +196,7 @@ _start:
 	syscall 				# call into the kernel
 </code></pre>
 <p>With the preceding code, if you compile it, it should work and read the file, however we want a clean exit, to avoid any bug with our program when leaving or returning, for this reason we will write a last system call which will cause to exit the program cleanly :</p>
-<pre><code class="language-x64asm">.global _start
+<pre><code class="language-x86asm">.global _start
 _start:
 .intel_syntax noprefix
 	# Open file descriptor
