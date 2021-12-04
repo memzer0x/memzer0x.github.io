@@ -403,6 +403,8 @@ mov     eax, [esp+0x40+var_34]
 mov     [esp+0x40+var_28], eax
 </code></pre>
 <p>We first prepare for the <strong>main_sum</strong> function and put every argument on the stack, each of those arguments takes <strong>4 bytes in size</strong> (we know we are dealing with integers), also note that the arguments are put backward on the stack. We then call our functions main, and return. Our return value has been placed <strong>4 bytes below our first argument (0x64 located at [esp+0x40+var_38])</strong>, our return value is only 4 bytes in size since we have implicitly declared it to be a int in our source code.</p>
+<p>One nice thing Ivan teached me is that arguments will be interpreted as variables in the disassembly, you can press <strong>q</strong> on them and it will change them and make them look more like <strong>stack offsets</strong>
+<img src="https://thumbs.gfycat.com/SmoothAmusingGrouper-mobile.mp4" alt="Removing Variables" /></p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="embryoasm-level-6"><a class="header" href="#embryoasm-level-6">EmbryoASM Level 6</a></h1>
 <p>So this challenge is a little bit harder since we need to compute the modulo of rdi with 256 and rsi with 65536 using only
 MOV instructions.</p>
