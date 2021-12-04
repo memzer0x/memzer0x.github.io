@@ -352,11 +352,11 @@ rabin2 is very useful when looking at go strings and is absolutely straightforwa
 - Searching for strings in a Go binary can't be quite a pain in the ass.
 - Searching for functions is easier than searching for strings, since functions name aren't stripped.
 - Go stacks are really small by default (2 kibibytes or 1024 bytes of stack), therefore many goroutines will call **morestack** (sym.runtime.morestack\_noctxt), to grow the stack size (in powers of 2) as needed using **stack copying**.
-- Go uses 8 bytes alignment on the stack.
-- Each functions compare it's stack pointer agains't **g-&gt;stackguard** to check for overflow.
-- Go binaries can return multiple values, therefore it places all the return values on the stack, because 3 return values would not fit inside rax.
-- Decompiling go binaries won't be very useful as it doesn't make the code more readable in a C representation.
 </code></pre>
+<p>a    - Go uses 8 bytes alignment on the stack.
+- Each functions compare it's stack pointer agains't <strong>g-&gt;stackguard</strong> to check for overflow.
+- Go binaries can return multiple values, therefore it places all the return values on the stack, because 3 return values would not fit inside rax.
+- Decompiling go binaries won't be very useful as it doesn't make the code more readable in a C representation.</p>
 <h2 id="practice-reverse-engineering-small-go-programs"><a class="header" href="#practice-reverse-engineering-small-go-programs">Practice Reverse Engineering Small Go Programs</a></h2>
 <p>Let's take an example, we will write a small Go program, compile it without optimizations and look at the assembly of it, we will write this small program :</p>
 <pre><code class="language-go">package main
@@ -391,7 +391,18 @@ func sum(a, b, c int) (int){
 <p>If we were below <strong>rcx</strong> or equal to it, we jump to <strong>sym.runtime.morestack_noctxt</strong>, which as said previously will double the stack size using <strong>stack copying</strong>.</p>
 <p>Since this code is usually present at the beginning of every function, you can just ignore it (you can change it's color to black in IDA or what i like to do is right click on the block of code i want to hide and click group node, input a text that represent the block code and confirm).</p>
 <p>You should end up with something that look like this if you did my way :</p>
-<p><img src="https://i.imgur.com/4WzoSD9.png" alt="Nodes Grouped" /></p>
+<p><img src="https://i.imgur.com/XMz2wFR.png" alt="Nodes Grouped" /></p>
+<p>You can see that i highlighted some stuff, first i highlighted the arguments of the <strong>main_sum</strong> function call, these arguments are <strong>1, 10, 100</strong> respectivily which are the exact same values we passed to main.sum the main function in our source (<strong>sum(1, 10, 100)</strong>).</p>
+<p>Secundo i highlighted the function <strong>main_sum</strong> in green, and for those who haven't noticed i have explicitely written where the main code block is, although i assume you would have been able to find it yourself.</p>
+<p>Okay now have you already forgotten that Go return values on the stack instead of rax ? hopefully not, let's prove this :</p>
+<pre><code class="language-x86asm">mov     [esp+0x40+var_40], 1   
+mov     [esp+0x40+var_3C], 0xA
+mov     [esp+0x40+var_38], 0x64
+call    main_sum
+mov     eax, [esp+0x40+var_34]
+mov     [esp+0x40+var_28], eax
+</code></pre>
+<p>We first prepare for the <strong>main_sum</strong> function and put every argument on the stack, each of those arguments takes <strong>4 bytes in size</strong> (we know we are dealing with integers), also note that the arguments are put backward on the stack. We then call our functions main, and return. Our return value has been placed <strong>4 bytes below our first argument (0x64 located at [esp+0x40+var_38])</strong>, our return value is only 4 bytes in size since we have implicitly declared it to be a int in our source code.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="embryoasm-level-6"><a class="header" href="#embryoasm-level-6">EmbryoASM Level 6</a></h1>
 <p>So this challenge is a little bit harder since we need to compute the modulo of rdi with 256 and rsi with 65536 using only
 MOV instructions.</p>
