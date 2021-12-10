@@ -1512,6 +1512,45 @@ int main(int argc, char **argv){
 }
 </code></pre>
 <p>Note that i haven't implemented <code>getopt</code> to the program i was too lazy for it... deal with it.</p>
+<p>Also if you want to have a better error coverage in your program then you should instead go for this version.</p>
+<pre><code class="language-cpp">#include &lt;stdio.h&gt;
+#include &lt;sys/types.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;unistd.h&gt;
+#include &lt;errno.h&gt;
+#include &lt;fcntl.h&gt;
+
+int main(int argc, char **argv){
+    char buf[1024];
+    ssize_t ret;
+    int fd;
+    if(argc == 2){
+        fd = open(argv[1], O_CREAT | O_TRUNC | O_RDWR, S_IRUSR | S_IWUSR);
+        if(fd == -1){
+            if(errno == EACCES) perror(&quot;open&quot;);
+            exit(EXIT_FAILURE);
+        }
+    } else {
+        fd = 1;
+    }
+    while((ret = read(0, buf, 1024-1)) != 0){
+        if(ret == -1){
+            if(errno == EINTR){
+                continue;
+            }
+            perror(&quot;read&quot;);
+            break;
+        }
+        ret = write(fd, buf, ret);
+        if(ret == -1){
+            perror(&quot;write&quot;);
+            break;
+        }
+    }
+
+    return 0;
+}
+</code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="half-handshake-crack"><a class="header" href="#half-handshake-crack">Half-Handshake Crack</a></h1>
 <p>Sometimes when waiting for handshakes you will catch only the half part of that handshake, that is without the handshake being acknowledged by the network in question.
 Know that those handshakes can be extremely useful in certain scenarios.</p>
