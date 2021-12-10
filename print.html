@@ -1528,6 +1528,101 @@ label3:
     .word 0x0000
 </code></pre>
 <p>Compile the shellcode with gcc <code>gcc -w -nostdlib -static solve.s -o solve</code>, then you can extract the bytes of the <code>.text section</code> using <code>objcopy --dump-section .text=solver ./solve</code>, then you can run the program with our solver file redirected to standard input <code>./babyshell_level6 &lt;solver</code>. </p>
+<p>Another cool thing is that we are given the source code for this challenge which is the following one.</p>
+<pre><code class="language-c">#define CAPSTONE_ARCH CS_ARCH_X86                                                                                                                                                                                                            #define CAPSTONE_MODE CS_MODE_64
+#include &lt;sys/mman.h&gt;                                                                                                                                                                                                               [66/1973]#include &lt;string.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;stdint.h&gt;
+#include &lt;assert.h&gt;
+#include &lt;unistd.h&gt;                                                                                                                                                                                                                          #include &lt;stdio.h&gt;
+                                                                                                                                                                                                                                             #include &lt;capstone/capstone.h&gt;
+                                                                                                                                                                                                                                             #define CAPSTONE_ARCH CS_ARCH_X86                                                                                                                                                                                                            #define CAPSTONE_MODE CS_MODE_64
+                                                                                                                                                                                                                                             void print_disassembly(void *shellcode_addr, size_t shellcode_size)                                                                                                                                                                          {                                                                                                                                                                                                                                                csh handle;                                                                                                                                                                                                                                  cs_insn *insn;                                                                                                                                                                                                                               size_t count;
+                                                                                                                                                                                                                                                 if (cs_open(CAPSTONE_ARCH, CAPSTONE_MODE, &amp;handle) != CS_ERR_OK)                                                                                                                                                                             {                                                                                                                                                                                                                                                printf(&quot;ERROR: disassembler failed to initialize.\n&quot;);                                                                                                                                                                                                                                                                                                                                                                                                                            void print_disassembly(void *shellcode_addr, size_t shellcode_size)                                                                                                                                                                          {                                                                                                                                                                                                                                                csh handle;                                                                                                                                                                                                                                  cs_insn *insn;                                                                                                                                                                                                                               size_t count;
+                                                                                                                                                                                                                                                 if (cs_open(CAPSTONE_ARCH, CAPSTONE_MODE, &amp;handle) != CS_ERR_OK)                                                                                                                                                                             {                                                                                                                                                                                                                                                printf(&quot;ERROR: disassembler failed to initialize.\n&quot;);                                                                                                                                                                               
+        return;
+    }                                                                                                                                                                                                                               [43/1973]
+    count = cs_disasm(handle, shellcode_addr, shellcode_size, (uint64_t)shellcode_addr, 0, &amp;insn);
+    if (count &gt; 0)
+    {                                                                                                                                                                                                                                                size_t j;                                                                                                                                                                                                                                    printf(&quot;      Address      |                      Bytes                    |          Instructions\n&quot;);                                                                                                                                      printf(&quot;------------------------------------------------------------------------------------------\n&quot;);                                                                                                                              
+        for (j = 0; j &lt; count; j++)
+        {
+            printf(&quot;0x%016lx | &quot;, (unsigned long)insn[j].address);
+            for (int k = 0; k &lt; insn[j].size; k++) printf(&quot;%02hhx &quot;, insn[j].bytes[k]);
+            for (int k = insn[j].size; k &lt; 15; k++) printf(&quot;   &quot;);
+            printf(&quot; | %s %s\n&quot;, insn[j].mnemonic, insn[j].op_str);
+        }
+
+        cs_free(insn, count);
+    }
+    else
+    {
+        printf(&quot;ERROR: Failed to disassemble shellcode! Bytes are:\n\n&quot;);                                                                                                                                                                            printf(&quot;      Address      |                      Bytes\n&quot;);                                                                                                                                                                                 printf(&quot;--------------------------------------------------------------------\n&quot;);                                                                                                                                                            for (unsigned int i = 0; i &lt;= shellcode_size; i += 16)
+        {
+            printf(&quot;0x%016lx | &quot;, (unsigned long)shellcode_addr+i);
+            for (int k = 0; k &lt; 16; k++) printf(&quot;%02hhx &quot;, ((uint8_t*)shellcode_addr)[i+k]);
+            printf(&quot;\n&quot;);
+        }
+    }
+
+    cs_close(&amp;handle);
+}
+
+void *shellcode_mem;
+size_t shellcode_size;
+
+int main(int argc, char **argv, char **envp)
+{
+    assert(argc &gt; 0);
+
+    printf(&quot;###\n&quot;);
+    printf(&quot;### Welcome to %s!\n&quot;, argv[0]);
+    printf(&quot;###\n&quot;);
+    printf(&quot;\n&quot;);
+
+    puts(&quot;This challenge reads in some bytes, modifies them (depending on the specific challenge configuration), and executes them&quot;);
+    puts(&quot;as code! This is a common exploitation scenario, called `code injection`. Through this series of challenges, you will&quot;);
+    puts(&quot;practice your shellcode writing skills under various constraints! To ensure that you are shellcoding, rather than doing&quot;);
+    puts(&quot;other tricks, this will sanitize all environment variables and arguments and close all file descriptors &gt; 2.\n&quot;);
+    for (int i = 3; i &lt; 10000; i++) close(i);
+    for (char **a = argv; *a != NULL; a++) memset(*a, 0, strlen(*a));
+    for (char **a = envp; *a != NULL; a++) memset(*a, 0, strlen(*a));
+
+    shellcode_mem = mmap((void *) 0x14c61000, 0x2000, PROT_READ|PROT_WRITE|PROT_EXEC, MAP_PRIVATE|MAP_ANON, 0, 0);
+    printf(&quot;[LEAK] Mapping shellcode memory at %p!\n&quot;, shellcode_mem);
+    assert(shellcode_mem == (void *) 0x14c61000);
+
+    puts(&quot;Reading 0x2000 bytes from stdin.\n&quot;);
+    shellcode_size = read(0, shellcode_mem, 0x2000);
+    assert(shellcode_size &gt; 0);
+
+    puts(&quot;Executing filter...\n&quot;);
+    puts(&quot;This challenge requires that your shellcode does not have any `syscall`, 'sysenter', or `int` instructions. System calls&quot;);
+    puts(&quot;are too dangerous! This filter works by scanning through the shellcode for the following byte sequences: 0f05&quot;);
+    puts(&quot;(`syscall`), 0f34 (`sysenter`), and 80cd (`int`). One way to evade this is to have your shellcode modify itself to&quot;);
+    puts(&quot;insert the `syscall` instructions at runtime.\n&quot;);
+    for (int i = 0; i &lt; shellcode_size; i++)
+    {
+        uint16_t *scw = (uint16_t *)((uint8_t*)shellcode_mem + i);
+        if (*scw == 0x80cd || *scw == 0x340f || *scw == 0x050f)
+        {
+            printf(&quot;Failed filter at byte %d!\n&quot;, i);
+            exit(1);
+        }
+    }
+
+    puts(&quot;Removing write permissions from first 4096 bytes of shellcode.\n&quot;);
+    assert(mprotect(shellcode_mem, 4096, PROT_READ|PROT_EXEC) == 0);
+
+    puts(&quot;This challenge is about to execute the following shellcode:\n&quot;);
+    print_disassembly(shellcode_mem, shellcode_size);
+    puts(&quot;&quot;);
+
+    puts(&quot;Executing shellcode!\n&quot;);
+    ((void(*)())shellcode_mem)();
+</code></pre>
+<p>First thing to note is that the program uses the <code>libcapstone</code> library as a disassembly framework, capstone will basically take the raw bytes we sent to it and disassemble them, then print the instructions to the screen. If you want to know more about disassembling raw bytes using <a href="http://www.capstone-engine.org">capstone</a>, make sure to check the section <a href="http://www.capstone-engine.org/lang_c.html">here</a> for the C language.</p>
+<p>So in main we first allocate 0x2000 bytes of memory space at address 0x14c61000, then we read 2000 bytes of input at this address (our shellcode), and finally at the end we call our shellcode <code>((void(*)())shellcode_mem)()</code>.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="credchecker"><a class="header" href="#credchecker">Credchecker</a></h1>
 <p>Credchecker is the first challenge of the Flare-On 8 (2021) CTF Event and it was super easy to complete.</p>
 <h2 id="the-challenge"><a class="header" href="#the-challenge">The Challenge</a></h2>
