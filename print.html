@@ -1940,6 +1940,9 @@ sudo reboot
 </code></pre>
 <p>This will export each network the computer recently connected to along with the passwords for these networks in a XML file.</p>
 <p>You could write a script to export these files, either using a request, dns exfil, email, or anything that comes through your mind.</p>
+<h2 id="bypassing-antivirus-with-dumpstacklog-trick"><a class="header" href="#bypassing-antivirus-with-dumpstacklog-trick">Bypassing Antivirus with DumpStack.log trick</a></h2>
+<p>Windows Defender is a little weird sometimes, in fact you can bypass it just by naming your file DumpStack.log, this work since Windows does not scan files named DumpStack.log. This will probably be patched in the future but it can be useful on unpatched computes.</p>
+<p><img src="https://i.imgur.com/RnAUQEn.png" alt="Mimikatz bypass Defender" /></p>
 
                     </main>
 
