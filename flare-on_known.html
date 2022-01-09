@@ -140,8 +140,8 @@
 <h2 id="static-analysis"><a class="header" href="#static-analysis">Static Analysis</a></h2>
 <p>First step in any good reverse engineering process is <strong>static analysis</strong> of the binary, so without hesitating let's get to it, we will use the following binaries to achieve this.</p>
 <h3 id="cff-explorer"><a class="header" href="#cff-explorer">CFF Explorer</a></h3>
-<p>CFF Explorer might be one of the best tools when it comes to static analysis of PE Binaries (Windows Binaries basically). 
-<img src="https://i.imgur.com/PDS4Few.png" alt="PE Informations" /></p>
+<p>CFF Explorer might be one of the best tools when it comes to static analysis of PE Binaries (Windows Binaries basically). </p>
+<p><img src="https://i.imgur.com/PDS4Few.png" alt="PE Informations" /></p>
 <p>Looking at the results after dropping the executable in CFF Explorer, we can notice that it's a 32bit binary.</p>
 <p>Looking at the import directory shows that only KERNEL32.dll is imported by our executable.
 <img src="https://i.imgur.com/zYXMRIk.png" alt="" /></p>
