@@ -1059,8 +1059,8 @@ io.interactive()
 <p>The challenge was relatively simple, it was a super simple ret2csu exploitation challenge, which could be done by pretty much anyone who has basic knowledge on assembly and exploitation.</p>
 <h2 id="patch-the-alarms"><a class="header" href="#patch-the-alarms">Patch the Alarms</a></h2>
 <p>So if you have looked a bit inside the binary in a disassembler, you can see that inside the function <code>setup()</code> there is a call to _alarm which will cause the program to have a timeout, which i kinda hate when debugging.</p>
-<p>So before trying to find any vulnerability i will open the binary inside IDA and perform a small program patch so we can skip the call to alarm and therefore we will don't get a time limit to debug the binary.
-<img src="https://i.imgur.com/J9kqf1i.png" alt="" /></p>
+<p>So before trying to find any vulnerability i will open the binary inside IDA and perform a small program patch so we can skip the call to alarm and therefore we will don't get a time limit to debug the binary.</p>
+<p><img src="https://i.imgur.com/J9kqf1i.png" alt="" /></p>
 <p>As you can see in the picture, we replace 2 instructions by a bunch of nops and we kept pop rbp and retn.</p>
 <p><em>Don't forget to save and apply patch to the binary before leaving IDA</em>.</p>
 <h2 id="finding-a-vulnerability"><a class="header" href="#finding-a-vulnerability">Finding a vulnerability</a></h2>
