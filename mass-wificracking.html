@@ -140,15 +140,15 @@
 <p>Atom's technique is clientless, making the need to capture a user's login in real time and the need for users to connect to the network at all <strong>obsolete</strong>. Furthermore, it only required the attacker to capture a single frame and <strong>eliminate the wrong passwords and malformed frames that are disturbing the cracking process</strong>.</p>
 <p>This means we do not need to wait for people connecting to their routers for this attack to be successful. We just need a PMKID hash and try to crack it.</p>
 <p>To crack a PMKID hash generated and what elements does it contain </p>
-<p><img src="https://i.imgur.com/NlZfEOP.png" alt="PMKID Hash" />
-The hash calculation might seem daunting at first glance but let us dive into it.</p>
+<p><img src="https://i.imgur.com/NlZfEOP.png" alt="PMKID Hash" /></p>
+<p>The hash calculation might seem daunting at first glance but let us dive into it.</p>
 <p><img src="https://i.imgur.com/xx4Xlme.png" alt="" />
 <strong>The PMK is computed as follows:</strong></p>
-<p><img src="https://i.imgur.com/zTGtXyD.png" alt="" />
-After a PMK was generated we can generate a PMKID.</p>
+<p><img src="https://i.imgur.com/zTGtXyD.png" alt="" /></p>
+<p>After a PMK was generated we can generate a PMKID.</p>
 <p><strong>The PMKID is computed as follows :</strong></p>
-<p><img src="https://i.imgur.com/6oEJGPz.png" alt="" />
-<img src="https://i.imgur.com/ODQeVSz.png" alt="" /></p>
+<p><img src="https://i.imgur.com/6oEJGPz.png" alt="" /></p>
+<p><img src="https://i.imgur.com/ODQeVSz.png" alt="" /></p>
 <h2 id="sniffing-pmkid"><a class="header" href="#sniffing-pmkid">Sniffing PMKID</a></h2>
 <p>To gather PMKID hashes, we need a wireless network interface that has monitor mode capabilities. Monitor mode allows packet capturing without having to associate with an access point.</p>
 <p>For this i'll use the <a href="https://www.alfa.com.tw/products/awus036ach?variant=36473965871176">AWUS036ACH from ALFA Network</a> which supports monitor mode and went inside the center of my city.</p>
