@@ -139,11 +139,11 @@
 <p>All of this changed in 2018 when <a href="https://hashcat.net/forum/thread-7717.html">atom's</a> accidentally discovered a new way to crack WPA2 while searching for new ways to crack the new WPA3 security standard (GO READ HIS RESEARCH !).</p>
 <p>Atom's technique is clientless, making the need to capture a user's login in real time and the need for users to connect to the network at all <strong>obsolete</strong>. Furthermore, it only required the attacker to capture a single frame and <strong>eliminate the wrong passwords and malformed frames that are disturbing the cracking process</strong>.</p>
 <p>This means we do not need to wait for people connecting to their routers for this attack to be successful. We just need a PMKID hash and try to crack it.</p>
-<p>To crack a PMKID hash generated and what elements does it contain </p>
+<p>To crack a PMKID hash generated and what elements does it contain</p>
 <p><img src="https://i.imgur.com/NlZfEOP.png" alt="PMKID Hash" /></p>
 <p>The hash calculation might seem daunting at first glance but let us dive into it.</p>
-<p><img src="https://i.imgur.com/xx4Xlme.png" alt="" />
-<strong>The PMK is computed as follows:</strong></p>
+<p><img src="https://i.imgur.com/xx4Xlme.png" alt="" /></p>
+<p><strong>The PMK is computed as follows:</strong></p>
 <p><img src="https://i.imgur.com/zTGtXyD.png" alt="" /></p>
 <p>After a PMK was generated we can generate a PMKID.</p>
 <p><strong>The PMKID is computed as follows :</strong></p>
