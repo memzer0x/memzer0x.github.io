@@ -2017,13 +2017,13 @@ func sum(a, b, c int) (int, string, error){
 </code></pre>
 <p>Compile the code with the same flags we used earlier (<strong>go build -gcflags &quot;all=-N -l&quot; program.go -o program.exe</strong>), and let's reverse it !</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="license-checker-0x01"><a class="header" href="#license-checker-0x01">License Checker 0x01</a></h1>
-<p>One of the easiest RE Challenges i've evr done, we will really really really quickly do this challenge in a blog post.</p>
+<p>One of the easiest RE Challenges i've ever done, we will really really really quickly do this challenge in a blog post.</p>
 <h2 id="first-run"><a class="header" href="#first-run">First Run</a></h2>
 <p>We run our program a first time to know how it works, the program seems to expect us to enter a license key as an argument <code>./license_checker_1 AAAA-AAAA-AAAA</code>.</p>
 <h2 id="disassembling-the-binary"><a class="header" href="#disassembling-the-binary">Disassembling the binary</a></h2>
 <p>For disassembling the binary and looking at machine code, i used <a href="https://cloud.binary.ninja">binary ninja cloud</a>, which makes solving reverse engineering challenges a lot quicker.</p>
-<p>Looking at the disassembly we see that our programs expects will branch only if <code>argc == 0x2</code>, then we can see a <code>mov rax, qword [rbp-0x10]{var_18}</code> which is the instruction that moves our <code>argv[1]</code> inside <code>rax</code>.</p>
-<p><img src="https://i.imgur.com/jvj0gwT.png" alt="" /></p>
+<p>Looking at the disassembly we see that our programs expects will branch only if <code>argc == 0x2</code>, then we can see a <code>mov rax, qword [rbp-0x10]{var_18}</code> which is the instruction that moves our <code>argv[1]</code> inside <code>rax</code>.
+<img src="https://i.imgur.com/jvj0gwT.png" alt="" /></p>
 <h2 id="solving-the-challenge-4"><a class="header" href="#solving-the-challenge-4">Solving the Challenge</a></h2>
 <p>As i hope you've understand the challenge works, here's how to complete it, ust run your program with the argument <code>KS-LICENSE-KEY-2021-REV-1</code> and you should win.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="babyshell-level-1"><a class="header" href="#babyshell-level-1">Babyshell Level 1</a></h1>
