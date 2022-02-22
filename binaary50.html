@@ -136,16 +136,23 @@
                     <main>
                         <h1 id="backdoorctf-2013-binaary50"><a class="header" href="#backdoorctf-2013-binaary50">BackdoorCTF 2013 (binaary50)</a></h1>
 <p>I decided to go back in time and did this 2013 CTF, this was the challenge for 50 points of the binary category, it's a super easy reverse engineering challenge. Since the challenge is super easy to complete i will make a very quick writeup on it.</p>
+<p>We are given the following description with this challenge.</p>
+<pre><code>One day, after getting tired of being made fun of by all the other hackers, he decided to finally take a look at BASH. His first thoughts were &quot;Bash? Bash Windows? Oh those violent script kiddies!&quot;. After finishing hundreds of online tutorials, he accidentally (obviously)found a flag. His next status update was &quot; The script kiddies will never be able to get the flag from this password protected binary.
+
+How dare he call you and us &quot;script kiddies&quot;?! Take him down.
+Here is the file . For 32bit users - file
+
+</code></pre>
 <h2 id="first-run"><a class="header" href="#first-run">First Run</a></h2>
 <p>Running the program for the first time, we can see that the program want's an argument and it checks if it's the right password, if we enter the wrong password, the program outputs <code>nothing to see here</code>.</p>
 <h2 id="putting-the-program-in-ida"><a class="header" href="#putting-the-program-in-ida">Putting the program in IDA</a></h2>
 <p>Time to disassemble the binary, i'm not very used to reversing C++ binaries with gdb so i will use IDA instead. Looking through the functions in the binary we can see a few interesting ones <code>main, strcmp, flag</code>, looking inside main we can see that our program checks if we gave it an argument.
-<img src="https://i.imgur.com/scfgWlb.png" alt="" />
-If we follow the right branch we will see a bunch of useless code that actually does not gets executed, its here just to mess with us.
-<img src="https://i.imgur.com/3hLyx3s.png" alt="" />
-We can prove that the code is useless by looking at the following piece of code.
-<img src="https://i.imgur.com/YWDmGdl.png" alt="" />
-If we keep scroling a little more we will see a strcmp instruction, which makes a lot more sense than the garbage we just saw, we can see that the string <code>Masternamer</code> is being passed into <code>rdi</code> for the function <code>strcmp</code> and based on the result of <code>strcmp</code> it will either print the flag or exit the program if values are different.
+<img src="https://i.imgur.com/scfgWlb.png" alt="" /></p>
+<p>If we follow the right branch we will see a bunch of useless code that actually does not gets executed, its here just to mess with us.
+<img src="https://i.imgur.com/3hLyx3s.png" alt="" /></p>
+<p>We can prove that the code is useless by looking at the following piece of code.
+<img src="https://i.imgur.com/YWDmGdl.png" alt="" /></p>
+<p>If we keep scroling a little more we will see a strcmp instruction, which makes a lot more sense than the garbage we just saw, we can see that the string <code>Masternamer</code> is being passed into <code>rdi</code> for the function <code>strcmp</code> and based on the result of <code>strcmp</code> it will either print the flag or exit the program if values are different.
 <img src="https://i.imgur.com/D7wSD2T.png" alt="" /></p>
 <h2 id="winning-the-challenge"><a class="header" href="#winning-the-challenge">Winning the Challenge</a></h2>
 <p>So if you don't know how to solve the challenge by yourself already, you should review you assembly knowledge. The program basically expects us to run the program with an argument with the value <code>Masternamer</code>.</p>
