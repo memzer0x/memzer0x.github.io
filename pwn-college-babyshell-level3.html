@@ -138,10 +138,12 @@
 <p>Babyshell level 3 is the third challenge from pwn.college shellcoding module, it is pretty simple if you have watched the <a href="https://www.youtube.com/watch?v=715v_-YnpT8&amp;t=1968s">videos for the module</a>.</p>
 <h2 id="solving-the-challenge"><a class="header" href="#solving-the-challenge">Solving The Challenge</a></h2>
 <p>Solving the challenge is pretty straight forward, we need to remove all null bytes from our shellcode, if there is any null bytes in our shellcode the program will fail.</p>
-<p>The challenge took me a couple hours to solve since i had to find instructions that doesn't contains any null bytes in their opcode, i found the following informations :
-- a lot of time <strong>mov</strong> instructions have null bytes in their opcode, however with <strong>rbx</strong> that was not the case, so i used <strong>rbx</strong> a little in the final solution <strong>instead of directly moving the value &quot;/flag&quot; into rdi</strong>.
-- if your string ends with a <strong>null character</strong>, you can <strong>replace it for a carriage return.</strong>
-- <strong>push and pop</strong> can be easily used as a replacement for the <strong>mov</strong> instruction, just push the value on the stack and pop it back into any register you want, we will use this technique <strong>a LOT</strong>, this way we will spend less time trying to fix mov instructions with null bytes.</p>
+<p>The challenge took me a couple hours to solve since i had to find instructions that doesn't contains any null bytes in their opcode, i found the following informations :</p>
+<ul>
+<li>a lot of time <strong>mov</strong> instructions have null bytes in their opcode, however with <strong>rbx</strong> that was not the case, so i used <strong>rbx</strong> a little in the final solution <strong>instead of directly moving the value &quot;/flag&quot; into rdi</strong>.</li>
+<li>if your string ends with a <strong>null character</strong>, you can <strong>replace it for a carriage return.</strong></li>
+<li><strong>push and pop</strong> can be easily used as a replacement for the <strong>mov</strong> instruction, just push the value on the stack and pop it back into any register you want, we will use this technique <strong>a LOT</strong>, this way we will spend less time trying to fix mov instructions with null bytes.</li>
+</ul>
 <p>With the preceding informations we should have a really got view of how we will solve this challenge.</p>
 <p>Let's start writing our shellcode, first we need a opened file descriptor to our flag file :</p>
 <pre><code class="language-x86asm">.global _start
@@ -157,7 +159,7 @@ _start:
 	mov rax, 2				# sys_open syscall number
 	syscall					# call into the kernel
 </code></pre>
-<p>When this code executes it should return a file descriptor to the &quot;/flag&quot; file. </p>
+<p>When this code executes it should return a file descriptor to the &quot;/flag&quot; file.</p>
 <p>We moved the value &quot;/flag&quot; using ebx and a shift left because &quot;/flag&quot; is 5 bits long and moving a 5 bytes value inside rbx (8 bytes register), it would have certainly implied some null bytes in the opcode.</p>
 <p>The value &quot;<strong>flag</strong>&quot;, is 4 bytes wide which <strong>fits inside ebx</strong>, so we can just <strong>move &quot;flag&quot; in ebx</strong>, <strong>shift it to the left 8 bits</strong> so we have space to put &quot;/&quot; in the <strong>lower 8 bits of ebx</strong>, and mov <strong>0x2f</strong> in it which is &quot;/&quot; in ascii encoding.</p>
 <p>The next step was to actually put rbx inside rdi since rbx is not on the x64 kernel calling convention, so just push the value inside rbx onto the stack and pop it back inside rdi, and you should have done the hardest part in this shellcode.</p>
